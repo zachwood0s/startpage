@@ -1,0 +1,144 @@
+@import url('https://fonts.googleapis.com/css?family=Fira+Mono|Yellowtail');
+
+:root{
+  --base00: #2d2d2d;
+  --base01: #393939;
+  --base02: #515151;
+  --base03: #747369;
+  --base04: #a09f93;
+  --base05: #d3d0c8;
+  --base06: #e8e6df;
+  --base07: #f2f0ec;
+  --base08: #f2777a;
+  --base09: #f99157;
+  --base10: #ffcc66;
+  --base11: #99cc99;
+  --base12: #66cccc;
+  --base13: #6699cc;
+  --base14: #cc99cc;
+  --base15: #d27b53;
+}
+
+.color-base00{
+  color:var(--base00);
+}
+.color-base01{
+  color:var(--base01);
+}
+.color-base02{
+  color:var(--base02);
+}
+.color-base03{
+  color:var(--base03);
+}
+.color-base04{
+  color:var(--base04);
+}
+.color-base05{
+  color:var(--base05);
+}
+.color-base06{
+  color:var(--base06);
+}
+.color-base07{
+  color:var(--base07);
+}
+.color-base08{
+  color:var(--base08);
+}
+.color-base09{
+  color:var(--base09);
+}
+.color-base10{
+  color:var(--base10);
+}
+.color-base11{
+  color:var(--base11);
+}
+.color-base12{
+  color:var(--base12);
+}
+.color-base13{
+  color:var(--base13);
+}
+.color-base14{
+  color:var(--base14);
+}
+.color-base15{
+  color:var(--base15);
+}
+
+body{
+  background: var(--base00);
+  width:100%;
+  height:100%;
+  margin:0;
+  color:var(--base06);
+  font-family: 'Fira Mono', monospace;
+}
+
+h1{
+  font-family: 'Yellowtail', cursive;
+  font-size:100px;
+}
+
+a{
+  color:inherit;
+  text-decoration:none;
+}
+
+.content{
+  width:50%;
+  margin-left:auto;
+  margin-right:auto;
+  text-align: center;
+}
+
+#links{
+  width:550px;
+  margin-left:auto;
+  margin-right:auto;
+  position:relative;
+}
+.category{
+  text-align:left;
+  font-size:22px;
+  padding:5px;
+}
+
+.category .title{
+  font-weight:bold;
+  color: inherit;
+  width:100px;
+  display:inline-block;
+}
+
+.category .title:after{
+  content: "|";
+  position: absolute;
+  left:95px;
+  margin-top:1px;
+}
+
+.category .item{
+  color:var(--base06);
+  transition: color .3s;
+  padding:0px 5px;
+}
+
+.category a:after{
+  content: "|";
+  position: relative;
+  left:8px;
+  margin-top:-2px;
+  color: var(--base06);
+}
+
+.category a:last-child:after{
+  content: "";
+}
+
+.category .item:hover{
+  color:inherit;
+}
+
