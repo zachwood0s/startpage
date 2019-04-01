@@ -111,6 +111,7 @@ a{
   color: inherit;
   width:100px;
   display:inline-block;
+  margin-right:10px;
 }
 
 .category .title:after{
@@ -123,13 +124,13 @@ a{
 .category .item{
   color:var(--base06);
   transition: color .3s;
-  padding:0px 5px;
+  padding:0px 10px;
 }
 
 .category a:after{
   content: "|";
   position: relative;
-  left:8px;
+  left:0px;
   margin-top:-2px;
   color: var(--base06);
 }
