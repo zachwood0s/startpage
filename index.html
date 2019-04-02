@@ -1,39 +1,37 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
+
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Start Page</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" type="text/css" media="screen" href="main.css">
-  <script src="main.js"></script>
+  <meta charset="UTF-8">
+  <title>New Tab</title>
+  <script type="text/javascript" src="elm.js"></script>
+  <link rel="stylesheet" href="main.css">
 </head>
+
 <body>
-  <div class="content">
-    <h1>Hello</h1>
-    <div id="links">
-        <!--
-      <div class="category color-base08">
-        <span class="title">reddit</span>
-        <span class="item">apexlegends</span>
-        <span class="item">all</span>
-        <span class="item">programming</span>
-      </div>
-      <div class="category color-base12">
-        <span class="title">google</span>
-        <span class="item">gmail</span>
-        <span class="item">docs</span>
-        <span class="item">slides</span>
-        <span class="item">drive</span>
-      </div>
-      <div class="category color-base14">
-        <span class="title">kstate</span>
-        <a href="https://ksis.k-state.edu"><span class="item">ksis</span></a>
-        <a href="https://k-state.instructure.com/"><span class="item">canvas</span></a>
-        <a href="https://outlook.office365.com/owa/?realm=ksu.edu"><span class="item">webmail</span></a>
-        -->
-      </div>
+  <!--
+  <footer>
+    <div id = "time" class = "color-base03">12:40</div>
+    <div id = "settingsTray">
+      <div id="settingsIcon"></div>
+      <div class="settingItem"></div>
+      <div class="settingItem"></div>
+      <div class="settingItem"></div>
     </div>
-  </div>
+  </footer>
+-->
 </body>
+
+<script type="text/javascript">
+var app = Elm.Main.init();
+/*
+var storedState = localStorage.getItem('elm-todo-save');
+var startingState = storedState ? JSON.parse(storedState) : null;
+var app = Elm.Main.init({ flags: startingState });
+app.ports.setStorage.subscribe(function(state) {
+    localStorage.setItem('elm-todo-save', JSON.stringify(state));
+});
+*/
+</script>
+
 </html>
