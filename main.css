@@ -71,6 +71,23 @@ a{
   margin-top:1px;
 }
 
+.category td{
+  height:30px;
+}
+
+.category .edit{
+  color: var(--base03);
+  cursor: pointer;
+  font-weight: bold;
+  border-radius:50%;
+  width:30px;
+  text-align: center;
+}
+
+.category .edit:hover{
+  background: var(--base01);
+}
+
 .category .item{
   color:var(--base06);
   transition: color .3s;
@@ -114,14 +131,13 @@ footer{
 footer .circle{
   width:40px;
   height:40px;
-  background: var(--base03);
 }
 
 #settingsTray{
   text-align: right;
 }
 
-#settingsIcon{
+#editIcon{
   position:absolute;
   cursor: pointer;
   right:20px;
@@ -182,4 +198,53 @@ footer .circle{
 }
 .color-base15{
   color:var(--base15);
+}
+
+.background-base00{
+  background:var(--base00);
+}
+.background-base01{
+  background:var(--base01);
+}
+.background-base02{
+  background:var(--base02);
+}
+.background-base03{
+  background:var(--base03);
+}
+.background-base04{
+  background:var(--base04);
+}
+.background-base05{
+  background:var(--base05);
+}
+.background-base06{
+  background:var(--base06);
+}
+.background-base07{
+  background:var(--base07);
+}
+.background-base08{
+  background:var(--base08);
+}
+.background-base09{
+  background:var(--base09);
+}
+.background-base10{
+  background:var(--base10);
+}
+.background-base11{
+  background:var(--base11);
+}
+.background-base12{
+  background:var(--base12);
+}
+.background-base13{
+  background:var(--base13);
+}
+.background-base14{
+  background:var(--base14);
+}
+.background-base15{
+  background:var(--base15);
 }

@@ -4457,6 +4457,7 @@ var author$project$Main$emptyModel = {
 		[
 			{
 			color: 'base08',
+			id: 0,
 			links: _List_fromArray(
 				[
 					{link: 'blah', name: 'ksis'},
@@ -4466,6 +4467,7 @@ var author$project$Main$emptyModel = {
 		},
 			{
 			color: 'base10',
+			id: 1,
 			links: _List_fromArray(
 				[
 					{link: 'lds', name: 'ksis'}
@@ -4474,8 +4476,9 @@ var author$project$Main$emptyModel = {
 		}
 		]),
 	editMode: true,
-	greeting: 'Hello',
+	greeting: 'Fuck You',
 	time: elm$time$Time$millisToPosix(0),
+	uid: 0,
 	zone: elm$time$Time$utc
 };
 var elm$core$Task$Perform = function (a) {
@@ -5439,6 +5442,18 @@ var elm$time$Time$every = F2(
 var author$project$Main$subscriptions = function (model) {
 	return A2(elm$time$Time$every, 1000, author$project$Main$OnTime);
 };
+var elm$core$Basics$neq = _Utils_notEqual;
+var elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2(elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
+	});
 var elm$core$Platform$Cmd$batch = _Platform_batch;
 var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
 var author$project$Main$update = F2(
@@ -5453,15 +5468,41 @@ var author$project$Main$update = F2(
 						model,
 						{time: t}),
 					elm$core$Platform$Cmd$none);
-			default:
+			case 'AdjustTimeZone':
 				var newZone = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{zone: newZone}),
 					elm$core$Platform$Cmd$none);
+			case 'SetEdit':
+				var val = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{editMode: val}),
+					elm$core$Platform$Cmd$none);
+			case 'RemoveCategory':
+				var id = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							categories: A2(
+								elm$core$List$filter,
+								function (c) {
+									return !_Utils_eq(c.id, id);
+								},
+								model.categories)
+						}),
+					elm$core$Platform$Cmd$none);
+			default:
+				return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
 		}
 	});
+var author$project$Main$RemoveCategory = function (a) {
+	return {$: 'RemoveCategory', a: a};
+};
 var elm$json$Json$Decode$map = _Json_map1;
 var elm$json$Json$Decode$map2 = _Json_map2;
 var elm$json$Json$Decode$succeed = _Json_succeed;
@@ -5530,6 +5571,23 @@ var author$project$Main$viewLinks = function (links) {
 			links));
 };
 var elm$html$Html$tr = _VirtualDom_node('tr');
+var elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			elm$virtual_dom$VirtualDom$on,
+			event,
+			elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		elm$html$Html$Events$on,
+		'click',
+		elm$json$Json$Decode$succeed(msg));
+};
 var author$project$Main$viewCategory = F2(
 	function (editMode, category) {
 		var title = A2(
@@ -5542,9 +5600,14 @@ var author$project$Main$viewCategory = F2(
 				[
 					elm$html$Html$text(category.name)
 				]));
-		var editButton = editMode ? A2(
+		var removeButton = editMode ? A2(
 			elm$html$Html$td,
-			_List_Nil,
+			_List_fromArray(
+				[
+					elm$html$Html$Attributes$class('edit'),
+					elm$html$Html$Events$onClick(
+					author$project$Main$RemoveCategory(category.id))
+				]),
 			_List_fromArray(
 				[
 					elm$html$Html$text('-')
@@ -5558,7 +5621,7 @@ var author$project$Main$viewCategory = F2(
 				]),
 			_List_fromArray(
 				[
-					editButton,
+					removeButton,
 					title,
 					author$project$Main$viewLinks(category.links)
 				]));
@@ -5580,7 +5643,24 @@ var author$project$Main$viewCategories = F2(
 				A2(elm$html$Html$Lazy$lazy2, author$project$Main$viewCategory, editMode),
 				categories));
 	});
+var author$project$Main$SetEdit = function (a) {
+	return {$: 'SetEdit', a: a};
+};
+var elm$core$Basics$not = _Basics_not;
 var elm$html$Html$div = _VirtualDom_node('div');
+var author$project$Main$viewEdit = function (editModeOn) {
+	var iconBackground = editModeOn ? 'base04' : 'base03';
+	return A2(
+		elm$html$Html$div,
+		_List_fromArray(
+			[
+				elm$html$Html$Attributes$id('editIcon'),
+				elm$html$Html$Attributes$class('circle background-' + iconBackground),
+				elm$html$Html$Events$onClick(
+				author$project$Main$SetEdit(!editModeOn))
+			]),
+		_List_Nil);
+};
 var elm$core$Basics$modBy = _Basics_modBy;
 var elm$time$Time$flooredDiv = F2(
 	function (numerator, denominator) {
@@ -5645,10 +5725,10 @@ var elm$time$Time$toMinute = F2(
 	});
 var author$project$Main$viewTime = F2(
 	function (time, zone) {
-		var minute = elm$core$String$fromInt(
-			A2(elm$time$Time$toMinute, zone, time));
-		var hour = elm$core$String$fromInt(
-			A2(elm$time$Time$toHour, zone, time));
+		var minute = A2(elm$time$Time$toMinute, zone, time);
+		var printedMinute = (minute < 10) ? ('0' + elm$core$String$fromInt(minute)) : elm$core$String$fromInt(minute);
+		var hour = A2(elm$time$Time$toHour, zone, time);
+		var printedHour = (hour < 10) ? ('0' + elm$core$String$fromInt(hour)) : elm$core$String$fromInt(hour);
 		return A2(
 			elm$html$Html$div,
 			_List_fromArray(
@@ -5658,7 +5738,7 @@ var author$project$Main$viewTime = F2(
 				]),
 			_List_fromArray(
 				[
-					elm$html$Html$text(hour + (':' + minute))
+					elm$html$Html$text(printedHour + (':' + printedMinute))
 				]));
 	});
 var elm$html$Html$footer = _VirtualDom_node('footer');
@@ -5668,7 +5748,8 @@ var author$project$Main$viewFooter = function (model) {
 		_List_Nil,
 		_List_fromArray(
 			[
-				A2(author$project$Main$viewTime, model.time, model.zone)
+				A2(author$project$Main$viewTime, model.time, model.zone),
+				author$project$Main$viewEdit(model.editMode)
 			]));
 };
 var elm$html$Html$h1 = _VirtualDom_node('h1');
