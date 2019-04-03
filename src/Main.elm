@@ -11,18 +11,17 @@ import Json.Decode as Json
 import Task
 import Time
 
-main : Program () Model Msg
+main : Program (Maybe StoredModel) Model Msg
 main =
   Browser.document
     { init = init
     , view = \model -> { title = "New Tab", body = [view model]}
-    , update = update
+    , update = updateWithStorage
     , subscriptions = subscriptions
     }
 
---port setStorage : Model -> Cmd msg
+port setStorage : StoredModel -> Cmd msg
 
-{-
 updateWithStorage : Msg -> Model -> (Model, Cmd Msg)
 updateWithStorage msg model =
   let 
@@ -30,9 +29,12 @@ updateWithStorage msg model =
       update msg model
   in
     ( newModel 
-    , Cmd.batch [ setStorage newModel, cmds ]
+    , Cmd.batch [ setStorage newModel.storedModel, cmds ]
     )
--}
+
+flip : (a -> b -> c) -> b -> a -> c
+flip func =
+  \b -> \a -> func a b
 
 --Subscriptions
 
@@ -42,13 +44,36 @@ subscriptions model =
 --Model
 
 type alias Model = 
-  { categories : List Category
-  , greeting : String
+  { storedModel : StoredModel
   , editMode : Bool
   , time : Time.Posix
   , zone : Time.Zone
+  }
+
+setStoredModel : StoredModel -> Model -> Model
+setStoredModel stored model =
+  { model | storedModel = stored }
+
+asStoredModelIn : Model -> StoredModel -> Model
+asStoredModelIn = flip setStoredModel
+
+type alias StoredModel = 
+  { categories : List Category
+  , greeting : String 
   , uid : Int
   }
+
+setCategories : List Category -> StoredModel -> StoredModel
+setCategories cats model =
+  { model | categories = cats }
+
+asCategoriesIn : StoredModel -> List Category -> StoredModel
+asCategoriesIn = flip setCategories
+
+setGreeting : String -> StoredModel -> StoredModel
+setGreeting greet model =
+  { model | greeting = greet }
+  
 
 type alias Category = 
   { name : String
@@ -62,8 +87,8 @@ type alias Link =
   , link : String
   }
 
-emptyModel : Model
-emptyModel = 
+emptyStoredModel : StoredModel
+emptyStoredModel = 
   { categories = 
     [
       { name = "kstate"
@@ -91,15 +116,20 @@ emptyModel =
       }
     ]
   , greeting = "Fuck You"
-  , time = Time.millisToPosix 0
-  , zone = Time.utc
-  , editMode = True
   , uid = 0
   }
 
-init : () -> ( Model, Cmd Msg )
-init _ = 
-  ( emptyModel
+emptyModel : StoredModel -> Model
+emptyModel stored = 
+  { storedModel = stored
+  , editMode = False
+  , time = Time.millisToPosix 0
+  , zone = Time.utc
+  }
+
+init : Maybe StoredModel -> ( Model, Cmd Msg )
+init maybeModel = 
+  ( emptyModel <| Maybe.withDefault emptyStoredModel maybeModel
   , Task.perform AdjustTimeZone Time.here
   )
 
@@ -131,7 +161,9 @@ update msg model =
       , Cmd.none
       )
     RemoveCategory id ->
-      ( { model | categories = List.filter (\c -> c.id /= id ) model.categories }
+      ( List.filter (\c -> c.id /= id) model.storedModel.categories
+        |> asCategoriesIn model.storedModel
+        |> asStoredModelIn model 
       , Cmd.none
       )
 
@@ -145,8 +177,8 @@ view : Model -> Html Msg
 view model = 
   div 
     [ class "content" ] 
-    [ viewGreeting model.greeting 
-    , viewCategories model.editMode model.categories
+    [ viewGreeting model.storedModel.greeting 
+    , viewCategories model.editMode model.storedModel.categories
     , viewFooter model
     ]
 
