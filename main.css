@@ -150,6 +150,53 @@ footer .circle{
   display:inline-block;
 }
 
+.addButton{
+  width:30px;
+  box-sizing:border-box;
+  display: flex;
+  flex-direction: row;
+  padding: 0 10px;
+  border-radius: 15px;
+  height:30px;
+  overflow: hidden;
+  transition: width .3s;
+}
+
+.addButton:hover{
+  background: var(--base01);
+}
+
+.addButton.expanded{
+  width:210px;
+  background: var(--base03);
+}
+
+.addButton.expanded:hover{
+  background: var(--base03);
+}
+
+.addButton span{
+  cursor: pointer;
+  font-size:25px;
+  margin-left:-3px;
+  margin-right:5px;
+  transition: color .3s;
+  color: var(--base03);
+}
+
+.addButton.expanded span{
+  color: var(--base00);
+}
+
+.addButton input{
+  flex-basis: auto;
+  padding: 0 10px;
+  margin: 4px;
+  background: var(--base01);
+  color: var(--base05);
+  border:none;
+}
+
 
 .color-base00{
   color:var(--base00);

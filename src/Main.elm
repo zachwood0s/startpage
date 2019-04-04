@@ -48,6 +48,7 @@ type alias Model =
   , editMode : Bool
   , time : Time.Posix
   , zone : Time.Zone
+  , addCatMode : Bool
   }
 
 setStoredModel : StoredModel -> Model -> Model
@@ -115,7 +116,7 @@ emptyStoredModel =
         ]
       }
     ]
-  , greeting = "Fuck You"
+  , greeting = "Hello"
   , uid = 0
   }
 
@@ -125,11 +126,12 @@ emptyModel stored =
   , editMode = False
   , time = Time.millisToPosix 0
   , zone = Time.utc
+  , addCatMode = False
   }
 
 init : Maybe StoredModel -> ( Model, Cmd Msg )
 init maybeModel = 
-  ( emptyModel <| Maybe.withDefault emptyStoredModel maybeModel
+  ( emptyModel emptyStoredModel--<| Maybe.withDefault emptyStoredModel maybeModel
   , Task.perform AdjustTimeZone Time.here
   )
 
@@ -168,7 +170,7 @@ update msg model =
       )
 
     AddCategory ->
-      ( model, Cmd.none )
+      ( { model | addCatMode = not model.addCatMode }, Cmd.none )
 
 
 --View
@@ -178,7 +180,7 @@ view model =
   div 
     [ class "content" ] 
     [ viewGreeting model.storedModel.greeting 
-    , viewCategories model.editMode model.storedModel.categories
+    , viewCategories model.editMode model.addCatMode model.storedModel.categories
     , viewFooter model
     ]
 
@@ -186,10 +188,32 @@ viewGreeting : String -> Html Msg
 viewGreeting greeting =
   h1 [] [ text greeting ]
 
-viewCategories : Bool -> List Category -> Html Msg
-viewCategories editMode categories =
-  table [ id "links" ] <|
-    List.map (lazy2 viewCategory editMode) categories 
+viewCategories : Bool -> Bool -> List Category -> Html Msg
+viewCategories editMode addCat categories =
+  let
+    addCategory = 
+      if editMode then 
+        tr [] [ td [ colspan 3 ] [ viewAddButton "Name" addCat AddCategory ]]
+      else text ""
+  in
+    table [ id "links" ] <|
+      List.map (lazy2 viewCategory editMode) categories ++ [ addCategory ]
+
+viewAddButton : String -> Bool -> Msg -> Html Msg
+viewAddButton intext expanded msg = 
+  div 
+    [ classList 
+      [ ("addButton ", True)
+      , ("expanded", expanded )  
+      ]
+    ]
+    [ span 
+        [ class "plus" 
+        , onClick msg
+        ]
+        [ text "+"]
+    , input [ placeholder intext ] []
+    ]
 
 viewCategory : Bool -> Category -> Html Msg
 viewCategory editMode category =

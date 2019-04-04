@@ -4454,6 +4454,7 @@ var elm$time$Time$Zone = F2(
 var elm$time$Time$utc = A2(elm$time$Time$Zone, 0, _List_Nil);
 var author$project$Main$emptyModel = function (stored) {
 	return {
+		addCatMode: false,
 		editMode: false,
 		storedModel: stored,
 		time: elm$time$Time$millisToPosix(0),
@@ -4483,22 +4484,9 @@ var author$project$Main$emptyStoredModel = {
 			name: 'kstate'
 		}
 		]),
-	greeting: 'Fuck You',
+	greeting: 'Hello',
 	uid: 0
 };
-var elm$core$Basics$apL = F2(
-	function (f, x) {
-		return f(x);
-	});
-var elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
-		}
-	});
 var elm$core$Task$Perform = function (a) {
 	return {$: 'Perform', a: a};
 };
@@ -4707,6 +4695,10 @@ var elm$core$Array$treeFromBuilder = F2(
 				continue treeFromBuilder;
 			}
 		}
+	});
+var elm$core$Basics$apL = F2(
+	function (f, x) {
+		return f(x);
 	});
 var elm$core$Basics$floor = _Basics_floor;
 var elm$core$Basics$max = F2(
@@ -5047,8 +5039,7 @@ var elm$time$Time$customZone = elm$time$Time$Zone;
 var elm$time$Time$here = _Time_here(_Utils_Tuple0);
 var author$project$Main$init = function (maybeModel) {
 	return _Utils_Tuple2(
-		author$project$Main$emptyModel(
-			A2(elm$core$Maybe$withDefault, author$project$Main$emptyStoredModel, maybeModel)),
+		author$project$Main$emptyModel(author$project$Main$emptyStoredModel),
 		A2(elm$core$Task$perform, author$project$Main$AdjustTimeZone, elm$time$Time$here));
 };
 var author$project$Main$OnTime = function (a) {
@@ -5550,6 +5541,7 @@ var author$project$Main$setStoredModel = F2(
 	});
 var author$project$Main$asStoredModelIn = author$project$Main$flip(author$project$Main$setStoredModel);
 var elm$core$Basics$neq = _Utils_notEqual;
+var elm$core$Basics$not = _Basics_not;
 var elm$core$List$filter = F2(
 	function (isGood, list) {
 		return A3(
@@ -5606,7 +5598,11 @@ var author$project$Main$update = F2(
 								model.storedModel.categories))),
 					elm$core$Platform$Cmd$none);
 			default:
-				return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{addCatMode: !model.addCatMode}),
+					elm$core$Platform$Cmd$none);
 		}
 	});
 var author$project$Main$updateWithStorage = F2(
@@ -5623,9 +5619,7 @@ var author$project$Main$updateWithStorage = F2(
 						cmds
 					])));
 	});
-var author$project$Main$RemoveCategory = function (a) {
-	return {$: 'RemoveCategory', a: a};
-};
+var author$project$Main$AddCategory = {$: 'AddCategory'};
 var elm$json$Json$Decode$map = _Json_map1;
 var elm$json$Json$Decode$map2 = _Json_map2;
 var elm$json$Json$Decode$succeed = _Json_succeed;
@@ -5641,7 +5635,8 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 			return 3;
 	}
 };
-var elm$html$Html$a = _VirtualDom_node('a');
+var elm$html$Html$div = _VirtualDom_node('div');
+var elm$html$Html$input = _VirtualDom_node('input');
 var elm$html$Html$span = _VirtualDom_node('span');
 var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
@@ -5653,6 +5648,77 @@ var elm$html$Html$Attributes$stringProperty = F2(
 			elm$json$Json$Encode$string(string));
 	});
 var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
+var elm$core$Tuple$second = function (_n0) {
+	var y = _n0.b;
+	return y;
+};
+var elm$html$Html$Attributes$classList = function (classes) {
+	return elm$html$Html$Attributes$class(
+		A2(
+			elm$core$String$join,
+			' ',
+			A2(
+				elm$core$List$map,
+				elm$core$Tuple$first,
+				A2(elm$core$List$filter, elm$core$Tuple$second, classes))));
+};
+var elm$html$Html$Attributes$placeholder = elm$html$Html$Attributes$stringProperty('placeholder');
+var elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			elm$virtual_dom$VirtualDom$on,
+			event,
+			elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		elm$html$Html$Events$on,
+		'click',
+		elm$json$Json$Decode$succeed(msg));
+};
+var author$project$Main$viewAddButton = F3(
+	function (intext, expanded, msg) {
+		return A2(
+			elm$html$Html$div,
+			_List_fromArray(
+				[
+					elm$html$Html$Attributes$classList(
+					_List_fromArray(
+						[
+							_Utils_Tuple2('addButton ', true),
+							_Utils_Tuple2('expanded', expanded)
+						]))
+				]),
+			_List_fromArray(
+				[
+					A2(
+					elm$html$Html$span,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$class('plus'),
+							elm$html$Html$Events$onClick(msg)
+						]),
+					_List_fromArray(
+						[
+							elm$html$Html$text('+')
+						])),
+					A2(
+					elm$html$Html$input,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$placeholder(intext)
+						]),
+					_List_Nil)
+				]));
+	});
+var author$project$Main$RemoveCategory = function (a) {
+	return {$: 'RemoveCategory', a: a};
+};
+var elm$html$Html$a = _VirtualDom_node('a');
 var elm$html$Html$Attributes$href = function (url) {
 	return A2(
 		elm$html$Html$Attributes$stringProperty,
@@ -5693,23 +5759,6 @@ var author$project$Main$viewLinks = function (links) {
 			links));
 };
 var elm$html$Html$tr = _VirtualDom_node('tr');
-var elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 'Normal', a: a};
-};
-var elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
-var elm$html$Html$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			elm$virtual_dom$VirtualDom$on,
-			event,
-			elm$virtual_dom$VirtualDom$Normal(decoder));
-	});
-var elm$html$Html$Events$onClick = function (msg) {
-	return A2(
-		elm$html$Html$Events$on,
-		'click',
-		elm$json$Json$Decode$succeed(msg));
-};
 var author$project$Main$viewCategory = F2(
 	function (editMode, category) {
 		var title = A2(
@@ -5749,27 +5798,50 @@ var author$project$Main$viewCategory = F2(
 				]));
 	});
 var elm$html$Html$table = _VirtualDom_node('table');
+var elm$html$Html$Attributes$colspan = function (n) {
+	return A2(
+		_VirtualDom_attribute,
+		'colspan',
+		elm$core$String$fromInt(n));
+};
 var elm$html$Html$Attributes$id = elm$html$Html$Attributes$stringProperty('id');
 var elm$virtual_dom$VirtualDom$lazy2 = _VirtualDom_lazy2;
 var elm$html$Html$Lazy$lazy2 = elm$virtual_dom$VirtualDom$lazy2;
-var author$project$Main$viewCategories = F2(
-	function (editMode, categories) {
+var author$project$Main$viewCategories = F3(
+	function (editMode, addCat, categories) {
+		var addCategory = editMode ? A2(
+			elm$html$Html$tr,
+			_List_Nil,
+			_List_fromArray(
+				[
+					A2(
+					elm$html$Html$td,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$colspan(3)
+						]),
+					_List_fromArray(
+						[
+							A3(author$project$Main$viewAddButton, 'Name', addCat, author$project$Main$AddCategory)
+						]))
+				])) : elm$html$Html$text('');
 		return A2(
 			elm$html$Html$table,
 			_List_fromArray(
 				[
 					elm$html$Html$Attributes$id('links')
 				]),
-			A2(
-				elm$core$List$map,
-				A2(elm$html$Html$Lazy$lazy2, author$project$Main$viewCategory, editMode),
-				categories));
+			_Utils_ap(
+				A2(
+					elm$core$List$map,
+					A2(elm$html$Html$Lazy$lazy2, author$project$Main$viewCategory, editMode),
+					categories),
+				_List_fromArray(
+					[addCategory])));
 	});
 var author$project$Main$SetEdit = function (a) {
 	return {$: 'SetEdit', a: a};
 };
-var elm$core$Basics$not = _Basics_not;
-var elm$html$Html$div = _VirtualDom_node('div');
 var author$project$Main$viewEdit = function (editModeOn) {
 	var iconBackground = editModeOn ? 'base04' : 'base03';
 	return A2(
@@ -5894,7 +5966,7 @@ var author$project$Main$view = function (model) {
 		_List_fromArray(
 			[
 				author$project$Main$viewGreeting(model.storedModel.greeting),
-				A2(author$project$Main$viewCategories, model.editMode, model.storedModel.categories),
+				A3(author$project$Main$viewCategories, model.editMode, model.addCatMode, model.storedModel.categories),
 				author$project$Main$viewFooter(model)
 			]));
 };
