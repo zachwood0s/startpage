@@ -1,0 +1,262 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Start Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    @import url('https://fonts.googleapis.com/css?family=Fira+Mono|Yellowtail');
+
+    :root{
+      --base00: #2d2d2d;
+      --base01: #393939;
+      --base02: #515151;
+      --base03: #747369;
+      --base04: #a09f93;
+      --base05: #d3d0c8;
+      --base06: #e8e6df;
+      --base07: #f2f0ec;
+      --base08: #f2777a;
+      --base09: #f99157;
+      --base10: #ffcc66;
+      --base11: #99cc99;
+      --base12: #66cccc;
+      --base13: #6699cc;
+      --base14: #cc99cc;
+      --base15: #d27b53;
+    }
+
+    .color-base00{
+      color:var(--base00);
+    }
+    .color-base01{
+      color:var(--base01);
+    }
+    .color-base02{
+      color:var(--base02);
+    }
+    .color-base03{
+      color:var(--base03);
+    }
+    .color-base04{
+      color:var(--base04);
+    }
+    .color-base05{
+      color:var(--base05);
+    }
+    .color-base06{
+      color:var(--base06);
+    }
+    .color-base07{
+      color:var(--base07);
+    }
+    .color-base08{
+      color:var(--base08);
+    }
+    .color-base09{
+      color:var(--base09);
+    }
+    .color-base10{
+      color:var(--base10);
+    }
+    .color-base11{
+      color:var(--base11);
+    }
+    .color-base12{
+      color:var(--base12);
+    }
+    .color-base13{
+      color:var(--base13);
+    }
+    .color-base14{
+      color:var(--base14);
+    }
+    .color-base15{
+      color:var(--base15);
+    }
+
+    body{
+      background: var(--base00);
+      width:100%;
+      height:100%;
+      margin:0;
+      color:var(--base06);
+      font-family: 'Fira Mono', monospace;
+    }
+
+    h1{
+      font-family: 'Yellowtail', cursive;
+      font-size:100px;
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    .content{
+      width:50%;
+      margin-left:auto;
+      margin-right:auto;
+      text-align: center;
+    }
+
+    #links{
+      width:550px;
+      margin-left:auto;
+      margin-right:auto;
+      position:relative;
+    }
+    .category{
+      text-align:left;
+      font-size:22px;
+      padding:5px;
+    }
+
+    .category .title{
+      font-weight:bold;
+      color: inherit;
+      width:100px;
+      display:inline-block;
+      margin-right:10px;
+    }
+
+    .category .title:after{
+      content: "|";
+      position: absolute;
+      left:95px;
+      margin-top:1px;
+    }
+
+    .category .item{
+      color:var(--base06);
+      transition: color .3s;
+      padding:0px 10px;
+    }
+
+    .category a:after{
+      content: "|";
+      position: relative;
+      left:0px;
+      margin-top:-2px;
+      color: var(--base06);
+    }
+
+    .category a:last-child:after{
+      content: "";
+    }
+
+    .category .item:hover{
+      color:inherit;
+    }
+
+  </style>
+
+</head>
+<body>
+  <div class="content">
+    <h1>Hello</h1>
+    <div id="links">
+      </div>
+    </div>
+  </div>
+  <script>
+    categories = [
+        {
+            name: "kstate",
+            color: "base14",
+            links: [
+                {
+                    name: "canvas",
+                    link: "https://k-state.instructure.com"
+                },
+                {
+                    name: "ksis",
+                    link: "https://ksis.k-state.edu"
+                },
+                {
+                    name: "tophat",
+                    link: "https://app.tophat.com/e/909821/lecture/"
+                },
+                {
+                    name: "webmail",
+                    link: "https://outlook.office365.com/owa/?realm=ksu.edu"
+                },
+            ]
+        },
+        {
+            name: "google",
+            color: "base08",
+            links:[
+                {
+                    name: "gmail",
+                    link: "https://mail.google.com"
+                },
+                {
+                    name: "docs",
+                    link: "https://docs.google.com"
+                },
+                {
+                    name: "drive",
+                    link: "https://drive.google.com"
+                },
+            ]
+        },
+        {
+            name: "reddit",
+            color: "base10",
+            links: [
+                {
+                    name: "apexlegends",
+                    link: "https://reddit.com/r/apexlegends"
+                },
+                {
+                    name: "programming",
+                    link: "https://reddit.com/r/programming"
+                },
+                {
+                    name: "all",
+                    link: "https://reddit.com/r/all"
+                },
+            ]
+        }
+    ]
+
+    function load(){
+        var linksElm = document.getElementById("links");
+        for(var i = 0; i<categories.length; i++){
+            var category = categories[i];
+            console.log(categories);
+            var categoryElm = document.createElement("div");
+            categoryElm.classList.add("category");
+            categoryElm.classList.add("color-"+category.color);
+            var title = document.createElement("span");
+            title.classList.add("title");
+            title.innerHTML = category.name;
+            categoryElm.appendChild(title);
+
+            for(var j = 0; j < category.links.length; j++){
+                var link = category.links[j];
+                categoryElm.appendChild(createItem(link.link, link.name));
+            }
+            linksElm.appendChild(categoryElm);
+        }
+    }
+
+    function createItem(link, title){
+        var linkElm = document.createElement("a");
+        linkElm.href = link;
+        linkElm.target = "blank";
+        var span = document.createElement("span");
+        span.classList.add("item");
+        span.innerHTML = title;
+        linkElm.appendChild(span);
+        return linkElm;
+    }
+
+    load();
+  </script>
+</body>
+</html>

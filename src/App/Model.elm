@@ -1,4 +1,7 @@
-module App.Model exposing (..)
+module App.Model exposing ( Model, StoredModel, Flags, init )
+
+import App.CategoryTable.Model
+import App.Messages exposing (..)
 
 type alias Model =
   { storedModel : StoredModel
@@ -6,28 +9,25 @@ type alias Model =
   }
 
 type alias StoredModel = 
-  { categories : List Category
+  { categoryTable : App.CategoryTable.Model.Model
   , greeting : String 
-  , uid : Int
   }
 
-type alias Category = 
-  { name : String
-  , color : String
-  , links : List Link
-  , id : Int
-  }
+type alias Flags = Maybe StoredModel
 
-type alias Link =
-  { name : String
-  , link : String
-  }
+init : Maybe StoredModel -> ( Model, Cmd Msg )
+init maybeModel =
+    ( emptyModel emptyStoredModel
+    , Cmd.none
+    )
 
-newCategory : String -> String -> Int -> Category
-newCategory name color id =
-  { name = name
-  , color = color
-  , links = []
-  , id = id 
-  }
+emptyModel : StoredModel -> Model
+emptyModel stored = 
+    Model stored False
+
+emptyStoredModel : StoredModel
+emptyStoredModel = 
+    { categoryTable = App.CategoryTable.Model.emptyCategoryTable
+    , greeting = "Hello"
+    }
 
