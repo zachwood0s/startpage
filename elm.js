@@ -4455,6 +4455,7 @@ var elm$time$Time$utc = A2(elm$time$Time$Zone, 0, _List_Nil);
 var author$project$Main$emptyModel = function (stored) {
 	return {
 		addCatMode: false,
+		categoryField: '',
 		editMode: false,
 		storedModel: stored,
 		time: elm$time$Time$millisToPosix(0),
@@ -4485,7 +4486,7 @@ var author$project$Main$emptyStoredModel = {
 		}
 		]),
 	greeting: 'Hello',
-	uid: 0
+	uid: 2
 };
 var elm$core$Task$Perform = function (a) {
 	return {$: 'Perform', a: a};
@@ -5519,6 +5520,17 @@ var author$project$Main$setStorage = _Platform_outgoingPort(
 					elm$json$Json$Encode$int($.uid))
 				]));
 	});
+var author$project$Main$addCategory = F2(
+	function (cat, model) {
+		return _Utils_update(
+			model,
+			{
+				categories: _Utils_ap(
+					model.categories,
+					_List_fromArray(
+						[cat]))
+			});
+	});
 var author$project$Main$flip = function (func) {
 	return function (b) {
 		return function (a) {
@@ -5540,6 +5552,16 @@ var author$project$Main$setStoredModel = F2(
 			{storedModel: stored});
 	});
 var author$project$Main$asStoredModelIn = author$project$Main$flip(author$project$Main$setStoredModel);
+var author$project$Main$newCategory = F3(
+	function (name, color, id) {
+		return {color: color, id: id, links: _List_Nil, name: name};
+	});
+var author$project$Main$setUid = F2(
+	function (uid, model) {
+		return _Utils_update(
+			model,
+			{uid: uid});
+	});
 var elm$core$Basics$neq = _Utils_notEqual;
 var elm$core$Basics$not = _Basics_not;
 var elm$core$List$filter = F2(
@@ -5597,11 +5619,31 @@ var author$project$Main$update = F2(
 								},
 								model.storedModel.categories))),
 					elm$core$Platform$Cmd$none);
-			default:
+			case 'UpdateCategoryField':
+				var text = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{categoryField: text}),
+					elm$core$Platform$Cmd$none);
+			case 'AddCategoryMode':
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{addCatMode: !model.addCatMode}),
+					elm$core$Platform$Cmd$none);
+			default:
+				var newCat = function (id) {
+					return A3(author$project$Main$newCategory, model.categoryField, 'base08', id);
+				};
+				return _Utils_Tuple2(
+					A2(
+						author$project$Main$asStoredModelIn,
+						model,
+						A2(
+							author$project$Main$addCategory,
+							newCat(model.storedModel.uid),
+							A2(author$project$Main$setUid, model.storedModel.uid + 1, model.storedModel))),
 					elm$core$Platform$Cmd$none);
 		}
 	});
@@ -5619,7 +5661,17 @@ var author$project$Main$updateWithStorage = F2(
 						cmds
 					])));
 	});
+var author$project$Main$AddCategoryMode = {$: 'AddCategoryMode'};
 var author$project$Main$AddCategory = {$: 'AddCategory'};
+var author$project$Main$UpdateCategoryField = function (a) {
+	return {$: 'UpdateCategoryField', a: a};
+};
+var elm$json$Json$Decode$field = _Json_decodeField;
+var elm$json$Json$Decode$int = _Json_decodeInt;
+var elm$html$Html$Events$keyCode = A2(elm$json$Json$Decode$field, 'keyCode', elm$json$Json$Decode$int);
+var elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
 var elm$json$Json$Decode$map = _Json_map1;
 var elm$json$Json$Decode$map2 = _Json_map2;
 var elm$json$Json$Decode$succeed = _Json_succeed;
@@ -5634,6 +5686,25 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 		default:
 			return 3;
 	}
+};
+var elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			elm$virtual_dom$VirtualDom$on,
+			event,
+			elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var elm$json$Json$Decode$andThen = _Json_andThen;
+var elm$json$Json$Decode$fail = _Json_fail;
+var author$project$Main$onEnter = function (msg) {
+	var isEnter = function (code) {
+		return (code === 13) ? elm$json$Json$Decode$succeed(msg) : elm$json$Json$Decode$fail('not ENTER');
+	};
+	return A2(
+		elm$html$Html$Events$on,
+		'keydown',
+		A2(elm$json$Json$Decode$andThen, isEnter, elm$html$Html$Events$keyCode));
 };
 var elm$html$Html$div = _VirtualDom_node('div');
 var elm$html$Html$input = _VirtualDom_node('input');
@@ -5663,22 +5734,43 @@ var elm$html$Html$Attributes$classList = function (classes) {
 				A2(elm$core$List$filter, elm$core$Tuple$second, classes))));
 };
 var elm$html$Html$Attributes$placeholder = elm$html$Html$Attributes$stringProperty('placeholder');
-var elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 'Normal', a: a};
-};
-var elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
-var elm$html$Html$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			elm$virtual_dom$VirtualDom$on,
-			event,
-			elm$virtual_dom$VirtualDom$Normal(decoder));
-	});
 var elm$html$Html$Events$onClick = function (msg) {
 	return A2(
 		elm$html$Html$Events$on,
 		'click',
 		elm$json$Json$Decode$succeed(msg));
+};
+var elm$html$Html$Events$alwaysStop = function (x) {
+	return _Utils_Tuple2(x, true);
+};
+var elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
+	return {$: 'MayStopPropagation', a: a};
+};
+var elm$html$Html$Events$stopPropagationOn = F2(
+	function (event, decoder) {
+		return A2(
+			elm$virtual_dom$VirtualDom$on,
+			event,
+			elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
+	});
+var elm$json$Json$Decode$at = F2(
+	function (fields, decoder) {
+		return A3(elm$core$List$foldr, elm$json$Json$Decode$field, decoder, fields);
+	});
+var elm$json$Json$Decode$string = _Json_decodeString;
+var elm$html$Html$Events$targetValue = A2(
+	elm$json$Json$Decode$at,
+	_List_fromArray(
+		['target', 'value']),
+	elm$json$Json$Decode$string);
+var elm$html$Html$Events$onInput = function (tagger) {
+	return A2(
+		elm$html$Html$Events$stopPropagationOn,
+		'input',
+		A2(
+			elm$json$Json$Decode$map,
+			elm$html$Html$Events$alwaysStop,
+			A2(elm$json$Json$Decode$map, tagger, elm$html$Html$Events$targetValue)));
 };
 var author$project$Main$viewAddButton = F3(
 	function (intext, expanded, msg) {
@@ -5710,7 +5802,9 @@ var author$project$Main$viewAddButton = F3(
 					elm$html$Html$input,
 					_List_fromArray(
 						[
-							elm$html$Html$Attributes$placeholder(intext)
+							elm$html$Html$Attributes$placeholder(intext),
+							elm$html$Html$Events$onInput(author$project$Main$UpdateCategoryField),
+							author$project$Main$onEnter(author$project$Main$AddCategory)
 						]),
 					_List_Nil)
 				]));
@@ -5809,7 +5903,7 @@ var elm$virtual_dom$VirtualDom$lazy2 = _VirtualDom_lazy2;
 var elm$html$Html$Lazy$lazy2 = elm$virtual_dom$VirtualDom$lazy2;
 var author$project$Main$viewCategories = F3(
 	function (editMode, addCat, categories) {
-		var addCategory = editMode ? A2(
+		var addCategoryButton = editMode ? A2(
 			elm$html$Html$tr,
 			_List_Nil,
 			_List_fromArray(
@@ -5822,7 +5916,7 @@ var author$project$Main$viewCategories = F3(
 						]),
 					_List_fromArray(
 						[
-							A3(author$project$Main$viewAddButton, 'Name', addCat, author$project$Main$AddCategory)
+							A3(author$project$Main$viewAddButton, 'Name', addCat, author$project$Main$AddCategoryMode)
 						]))
 				])) : elm$html$Html$text('');
 		return A2(
@@ -5837,7 +5931,7 @@ var author$project$Main$viewCategories = F3(
 					A2(elm$html$Html$Lazy$lazy2, author$project$Main$viewCategory, editMode),
 					categories),
 				_List_fromArray(
-					[addCategory])));
+					[addCategoryButton])));
 	});
 var author$project$Main$SetEdit = function (a) {
 	return {$: 'SetEdit', a: a};
@@ -6118,13 +6212,9 @@ var elm$url$Url$fromString = function (str) {
 		A2(elm$core$String$dropLeft, 8, str)) : elm$core$Maybe$Nothing);
 };
 var elm$browser$Browser$document = _Browser_document;
-var elm$json$Json$Decode$andThen = _Json_andThen;
-var elm$json$Json$Decode$field = _Json_decodeField;
-var elm$json$Json$Decode$int = _Json_decodeInt;
 var elm$json$Json$Decode$list = _Json_decodeList;
 var elm$json$Json$Decode$null = _Json_decodeNull;
 var elm$json$Json$Decode$oneOf = _Json_oneOf;
-var elm$json$Json$Decode$string = _Json_decodeString;
 var author$project$Main$main = elm$browser$Browser$document(
 	{
 		init: author$project$Main$init,

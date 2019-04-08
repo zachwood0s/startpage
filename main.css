@@ -17,6 +17,8 @@
   --base13: #6699cc;
   --base14: #cc99cc;
   --base15: #d27b53;
+
+  --transition: .2s;
 }
 
 
@@ -90,7 +92,7 @@ a{
 
 .category .item{
   color:var(--base06);
-  transition: color .3s;
+  transition: color var(--transition);
   padding:0px 10px;
 }
 
@@ -159,7 +161,7 @@ footer .circle{
   border-radius: 15px;
   height:30px;
   overflow: hidden;
-  transition: width .3s;
+  transition: width var(--transition);
 }
 
 .addButton:hover{
@@ -180,7 +182,7 @@ footer .circle{
   font-size:25px;
   margin-left:-3px;
   margin-right:5px;
-  transition: color .3s;
+  transition: color var(--transition);
   color: var(--base03);
 }
 

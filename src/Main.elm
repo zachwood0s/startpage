@@ -49,6 +49,11 @@ type alias Model =
   , time : Time.Posix
   , zone : Time.Zone
   , addCatMode : Bool
+  , categoryField : String
+  , addLinkMode : Bool
+  , addLinkId : Int
+  , linkFieldName : String
+  , linkFieldUrl : String
   }
 
 setStoredModel : StoredModel -> Model -> Model
@@ -64,12 +69,23 @@ type alias StoredModel =
   , uid : Int
   }
 
+setUid : Int -> StoredModel -> StoredModel
+setUid uid model =
+  { model | uid = uid }
+
+asUidIn : StoredModel -> Int -> StoredModel
+asUidIn = flip setUid
+
 setCategories : List Category -> StoredModel -> StoredModel
 setCategories cats model =
   { model | categories = cats }
 
 asCategoriesIn : StoredModel -> List Category -> StoredModel
 asCategoriesIn = flip setCategories
+
+addCategory : Category -> StoredModel -> StoredModel
+addCategory cat model = 
+  { model | categories = model.categories ++ [ cat ] }
 
 setGreeting : String -> StoredModel -> StoredModel
 setGreeting greet model =
@@ -86,6 +102,14 @@ type alias Category =
 type alias Link =
   { name : String
   , link : String
+  }
+
+newCategory : String -> String -> Int -> Category
+newCategory name color id =
+  { name = name
+  , color = color
+  , links = []
+  , id = id 
   }
 
 emptyStoredModel : StoredModel
@@ -117,7 +141,7 @@ emptyStoredModel =
       }
     ]
   , greeting = "Hello"
-  , uid = 0
+  , uid = 2
   }
 
 emptyModel : StoredModel -> Model
@@ -127,6 +151,11 @@ emptyModel stored =
   , time = Time.millisToPosix 0
   , zone = Time.utc
   , addCatMode = False
+  , categoryField = ""
+  , addLinkMode = False
+  , addLinkId = 0
+  , linkFieldName = ""
+  , linkFieldUrl = ""
   }
 
 init : Maybe StoredModel -> ( Model, Cmd Msg )
@@ -144,7 +173,10 @@ type Msg
   | AdjustTimeZone Time.Zone
   | SetEdit Bool
   | RemoveCategory Int
+  | AddCategoryMode
   | AddCategory
+  | AddLinkMode Int
+  | UpdateCategoryField String
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model = 
@@ -168,9 +200,20 @@ update msg model =
         |> asStoredModelIn model 
       , Cmd.none
       )
-
-    AddCategory ->
+    UpdateCategoryField text ->
+      ( { model | categoryField = text }, Cmd.none )
+    AddCategoryMode ->
       ( { model | addCatMode = not model.addCatMode }, Cmd.none )
+    AddCategory -> 
+      let 
+        newCat id = newCategory model.categoryField "base08" id
+      in
+        ( model.storedModel
+          |> setUid (model.storedModel.uid + 1)
+          |> addCategory (newCat model.storedModel.uid)
+          |> asStoredModelIn model
+        , Cmd.none
+        )
 
 
 --View
@@ -191,13 +234,13 @@ viewGreeting greeting =
 viewCategories : Bool -> Bool -> List Category -> Html Msg
 viewCategories editMode addCat categories =
   let
-    addCategory = 
+    addCategoryButton = 
       if editMode then 
-        tr [] [ td [ colspan 3 ] [ viewAddButton "Name" addCat AddCategory ]]
+        tr [] [ td [ colspan 3 ] [ viewAddButton "Name" addCat AddCategoryMode ]]
       else text ""
   in
     table [ id "links" ] <|
-      List.map (lazy2 viewCategory editMode) categories ++ [ addCategory ]
+      List.map (lazy2 viewCategory editMode) categories ++ [ addCategoryButton ]
 
 viewAddButton : String -> Bool -> Msg -> Html Msg
 viewAddButton intext expanded msg = 
@@ -212,8 +255,26 @@ viewAddButton intext expanded msg =
         , onClick msg
         ]
         [ text "+"]
-    , input [ placeholder intext ] []
+    , input 
+      [ placeholder intext 
+      , onInput UpdateCategoryField
+      , onEnter AddCategory
+      ] []
     ]
+
+
+onEnter : Msg -> Attribute Msg
+onEnter msg =
+  let 
+    isEnter code =
+      if code == 13 then
+        Json.succeed msg
+      else
+        Json.fail "not ENTER"
+  in
+    on "keydown" (Json.andThen isEnter keyCode)
+
+
 
 viewCategory : Bool -> Category -> Html Msg
 viewCategory editMode category =
