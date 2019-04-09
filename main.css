@@ -164,6 +164,11 @@ footer .circle{
   transition: width var(--transition);
 }
 
+.addButton input{
+  visibility: hidden;
+  display:none
+}
+
 .addButton:hover{
   background: var(--base01);
 }
@@ -171,6 +176,15 @@ footer .circle{
 .addButton.expanded{
   width:210px;
   background: var(--base03);
+}
+
+.addButton.expanded.large{
+  width:375px;
+}
+
+.addButton.expanded input{
+  visibility: visible;
+  display:inline;
 }
 
 .addButton.expanded:hover{

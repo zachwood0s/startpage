@@ -10,7 +10,7 @@ import App.CategoryTable.View
 
 view : Model -> Browser.Document Msg
 view model = 
-    { title = "New Tab"
+    { title = "New Tab test"
     , body = [ viewBody model ]
     }
 

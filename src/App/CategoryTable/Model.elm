@@ -1,9 +1,10 @@
-module App.CategoryTable.Model exposing (Model, emptyCategoryTable)
+module App.CategoryTable.Model exposing (Model, emptyCategoryTable, setCategories, addCategory, setUid, asCategoriesIn )
 
-import App.CategoryTable.Category.Model
+import App.CategoryTable.Category.Model as CategoryModel
+import Utils exposing ( flip )
 
 type alias Model = 
-    { categories : List App.CategoryTable.Category.Model.Model
+    { categories : List CategoryModel.Model
     , uid : Int
     , addMode : Bool
     , inputField : String
@@ -16,4 +17,21 @@ emptyCategoryTable =
     , addMode = False
     , inputField = ""
     }
+
+setCategories : List CategoryModel.Model -> Model -> Model
+setCategories categories model =
+    { model | categories = categories }
+
+asCategoriesIn : Model -> List CategoryModel.Model -> Model
+asCategoriesIn = flip setCategories
+
+addCategory : CategoryModel.Model -> Model -> Model
+addCategory category model =
+    model.categories ++ [ category ]
+    |> asCategoriesIn model
+
+setUid : Int -> Model -> Model
+setUid uid model =
+    { model | uid = uid }
+
 

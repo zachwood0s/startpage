@@ -1,6 +1,9 @@
 module Utils exposing ( flip, onEnter )
 
+import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (..)
+import Json.Decode as Json
 
 flip : (a -> b -> c) -> b -> a -> c
 flip func =

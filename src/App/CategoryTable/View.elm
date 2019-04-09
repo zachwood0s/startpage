@@ -2,10 +2,12 @@ module App.CategoryTable.View exposing ( view )
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onInput)
+import Html.Events exposing (onInput, onClick)
 
 import App.CategoryTable.Model exposing ( Model )
 import App.CategoryTable.Messages exposing ( Msg(..) )
+
+import App.CategoryTable.Category.View 
 
 import Utils exposing ( onEnter )
 
@@ -17,9 +19,19 @@ view editMode model =
                 tr [] 
                    [ td [ colspan 3 ] [ viewAddButton model.addMode ]] 
             else text ""
+        content = (viewCategories editMode model) ++ [ addButton ]
     in
-        table [ id "links" ] [ addButton ]
+        table 
+            [ id "links" ] 
+            content
 
+viewCategories : Bool -> Model -> List (Html Msg)
+viewCategories editMode model =
+    let 
+        showCat category = 
+            Html.map (CategoryMsg category.id) ( App.CategoryTable.Category.View.view editMode category )
+    in
+        List.map showCat model.categories
 
 viewAddButton : Bool -> Html Msg
 viewAddButton expanded =
