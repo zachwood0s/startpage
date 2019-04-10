@@ -1,7 +1,7 @@
 module App.CategoryTable.Category.Update exposing ( update )
 
 import App.CategoryTable.Category.Messages exposing ( Msg(..) )
-import App.CategoryTable.Category.Model exposing ( Model, addLink )
+import App.CategoryTable.Category.Model exposing ( Model, addLink, asLinksIn )
 import App.CategoryTable.Link.Model exposing ( newLink )
 
 import Validate exposing (Validator, ifBlank, validate )
@@ -22,12 +22,19 @@ update msg model =
 
     Add -> 
       let
+        newUid = model.uid + 1
         newModel = 
           if inputValidator model then
-            addLink (newLink model.nameField model.urlField) model
+            addLink (newLink model.nameField model.urlField newUid ) model
           else model
       in
-        ( newModel, Cmd.none )
+        ( { newModel | uid = newUid }, Cmd.none )
+    
+    RemoveLink id ->
+      ( List.filter (\l -> l.id /= id ) model.links
+        |> asLinksIn model
+      , Cmd.none
+      )
 
     _ -> ( model, Cmd.none )
 

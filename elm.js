@@ -4314,11 +4314,10 @@ var author$project$App$Model$Model = F2(
 	function (storedModel, editMode) {
 		return {editMode: editMode, storedModel: storedModel};
 	});
-var elm$core$Basics$True = {$: 'True'};
-var author$project$App$Model$emptyModel = function (stored) {
-	return A2(author$project$App$Model$Model, stored, true);
-};
 var elm$core$Basics$False = {$: 'False'};
+var author$project$App$Model$emptyModel = function (stored) {
+	return A2(author$project$App$Model$Model, stored, false);
+};
 var elm$core$Basics$EQ = {$: 'EQ'};
 var elm$core$Basics$LT = {$: 'LT'};
 var elm$core$Elm$JsArray$foldr = _JsArray_foldr;
@@ -4401,6 +4400,16 @@ var elm$core$Set$toList = function (_n0) {
 };
 var author$project$App$CategoryTable$Model$emptyCategoryTable = {addMode: false, categories: _List_Nil, inputField: '', uid: 0};
 var author$project$App$Model$emptyStoredModel = {categoryTable: author$project$App$CategoryTable$Model$emptyCategoryTable, greeting: 'Hello'};
+var elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var elm$core$Basics$True = {$: 'True'};
 var elm$core$Result$isOk = function (result) {
 	if (result.$ === 'Ok') {
 		return true;
@@ -4798,7 +4807,8 @@ var elm$core$Platform$Cmd$batch = _Platform_batch;
 var elm$core$Platform$Cmd$none = elm$core$Platform$Cmd$batch(_List_Nil);
 var author$project$App$Model$init = function (maybeModel) {
 	return _Utils_Tuple2(
-		author$project$App$Model$emptyModel(author$project$App$Model$emptyStoredModel),
+		author$project$App$Model$emptyModel(
+			A2(elm$core$Maybe$withDefault, author$project$App$Model$emptyStoredModel, maybeModel)),
 		elm$core$Platform$Cmd$none);
 };
 var elm$core$Platform$Sub$batch = _Platform_batch;
@@ -4806,9 +4816,193 @@ var elm$core$Platform$Sub$none = elm$core$Platform$Sub$batch(_List_Nil);
 var author$project$App$Subscriptions$subscriptions = function (_n0) {
 	return elm$core$Platform$Sub$none;
 };
+var elm$json$Json$Encode$bool = _Json_wrap;
+var elm$json$Json$Encode$int = _Json_wrap;
+var elm$json$Json$Encode$list = F2(
+	function (func, entries) {
+		return _Json_wrap(
+			A3(
+				elm$core$List$foldl,
+				_Json_addEntry(func),
+				_Json_emptyArray(_Utils_Tuple0),
+				entries));
+	});
+var elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			elm$core$List$foldl,
+			F2(
+				function (_n0, obj) {
+					var k = _n0.a;
+					var v = _n0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(_Utils_Tuple0),
+			pairs));
+};
+var elm$json$Json$Encode$string = _Json_wrap;
+var author$project$App$Update$setStorage = _Platform_outgoingPort(
+	'setStorage',
+	function ($) {
+		return elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'categoryTable',
+					function ($) {
+						return elm$json$Json$Encode$object(
+							_List_fromArray(
+								[
+									_Utils_Tuple2(
+									'addMode',
+									elm$json$Json$Encode$bool($.addMode)),
+									_Utils_Tuple2(
+									'categories',
+									elm$json$Json$Encode$list(
+										function ($) {
+											return elm$json$Json$Encode$object(
+												_List_fromArray(
+													[
+														_Utils_Tuple2(
+														'addMode',
+														elm$json$Json$Encode$bool($.addMode)),
+														_Utils_Tuple2(
+														'color',
+														elm$json$Json$Encode$string($.color)),
+														_Utils_Tuple2(
+														'id',
+														elm$json$Json$Encode$int($.id)),
+														_Utils_Tuple2(
+														'links',
+														elm$json$Json$Encode$list(
+															function ($) {
+																return elm$json$Json$Encode$object(
+																	_List_fromArray(
+																		[
+																			_Utils_Tuple2(
+																			'id',
+																			elm$json$Json$Encode$int($.id)),
+																			_Utils_Tuple2(
+																			'name',
+																			elm$json$Json$Encode$string($.name)),
+																			_Utils_Tuple2(
+																			'url',
+																			elm$json$Json$Encode$string($.url))
+																		]));
+															})($.links)),
+														_Utils_Tuple2(
+														'name',
+														elm$json$Json$Encode$string($.name)),
+														_Utils_Tuple2(
+														'nameField',
+														elm$json$Json$Encode$string($.nameField)),
+														_Utils_Tuple2(
+														'uid',
+														elm$json$Json$Encode$int($.uid)),
+														_Utils_Tuple2(
+														'urlField',
+														elm$json$Json$Encode$string($.urlField))
+													]));
+										})($.categories)),
+									_Utils_Tuple2(
+									'inputField',
+									elm$json$Json$Encode$string($.inputField)),
+									_Utils_Tuple2(
+									'uid',
+									elm$json$Json$Encode$int($.uid))
+								]));
+					}($.categoryTable)),
+					_Utils_Tuple2(
+					'greeting',
+					elm$json$Json$Encode$string($.greeting))
+				]));
+	});
+var author$project$App$CategoryTable$Category$Model$initEdit = function (previous) {
+	return _Utils_update(
+		previous,
+		{addMode: false, nameField: '', urlField: ''});
+};
+var elm$core$List$foldrHelper = F4(
+	function (fn, acc, ctr, ls) {
+		if (!ls.b) {
+			return acc;
+		} else {
+			var a = ls.a;
+			var r1 = ls.b;
+			if (!r1.b) {
+				return A2(fn, a, acc);
+			} else {
+				var b = r1.a;
+				var r2 = r1.b;
+				if (!r2.b) {
+					return A2(
+						fn,
+						a,
+						A2(fn, b, acc));
+				} else {
+					var c = r2.a;
+					var r3 = r2.b;
+					if (!r3.b) {
+						return A2(
+							fn,
+							a,
+							A2(
+								fn,
+								b,
+								A2(fn, c, acc)));
+					} else {
+						var d = r3.a;
+						var r4 = r3.b;
+						var res = (ctr > 500) ? A3(
+							elm$core$List$foldl,
+							fn,
+							acc,
+							elm$core$List$reverse(r4)) : A4(elm$core$List$foldrHelper, fn, acc, ctr + 1, r4);
+						return A2(
+							fn,
+							a,
+							A2(
+								fn,
+								b,
+								A2(
+									fn,
+									c,
+									A2(fn, d, res))));
+					}
+				}
+			}
+		}
+	});
+var elm$core$List$foldr = F3(
+	function (fn, acc, ls) {
+		return A4(elm$core$List$foldrHelper, fn, acc, 0, ls);
+	});
+var elm$core$List$map = F2(
+	function (f, xs) {
+		return A3(
+			elm$core$List$foldr,
+			F2(
+				function (x, acc) {
+					return A2(
+						elm$core$List$cons,
+						f(x),
+						acc);
+				}),
+			_List_Nil,
+			xs);
+	});
+var author$project$App$CategoryTable$Model$initEdit = function (previous) {
+	return _Utils_update(
+		previous,
+		{
+			addMode: false,
+			categories: A2(elm$core$List$map, author$project$App$CategoryTable$Category$Model$initEdit, previous.categories),
+			inputField: ''
+		});
+};
 var author$project$App$CategoryTable$Category$Model$newCategory = F3(
 	function (name, color, id) {
-		return {addMode: false, color: color, id: id, links: _List_Nil, name: name, nameField: '', urlField: ''};
+		return {addMode: false, color: color, id: id, links: _List_Nil, name: name, nameField: '', uid: 0, urlField: ''};
 	});
 var author$project$App$CategoryTable$Model$setCategories = F2(
 	function (categories, model) {
@@ -4951,15 +5145,27 @@ var author$project$App$CategoryTable$Category$Update$inputValidator = rtfeldman$
 			},
 			'Enter a name')
 		]));
-var author$project$App$CategoryTable$Link$Model$Model = F2(
-	function (name, url) {
-		return {name: name, url: url};
+var author$project$App$CategoryTable$Link$Model$Model = F3(
+	function (name, url, id) {
+		return {id: id, name: name, url: url};
 	});
-var author$project$App$CategoryTable$Link$Model$newLink = F2(
-	function (name, url) {
-		return A2(author$project$App$CategoryTable$Link$Model$Model, name, url);
+var author$project$App$CategoryTable$Link$Model$newLink = F3(
+	function (name, url, id) {
+		return A3(author$project$App$CategoryTable$Link$Model$Model, name, url, id);
 	});
+var elm$core$Basics$neq = _Utils_notEqual;
 var elm$core$Basics$not = _Basics_not;
+var elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2(elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
+	});
 var author$project$App$CategoryTable$Category$Update$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -4986,11 +5192,29 @@ var author$project$App$CategoryTable$Category$Update$update = F2(
 						{nameField: str}),
 					elm$core$Platform$Cmd$none);
 			case 'Add':
+				var newUid = model.uid + 1;
 				var newModel = author$project$App$CategoryTable$Category$Update$inputValidator(model) ? A2(
 					author$project$App$CategoryTable$Category$Model$addLink,
-					A2(author$project$App$CategoryTable$Link$Model$newLink, model.nameField, model.urlField),
+					A3(author$project$App$CategoryTable$Link$Model$newLink, model.nameField, model.urlField, newUid),
 					model) : model;
-				return _Utils_Tuple2(newModel, elm$core$Platform$Cmd$none);
+				return _Utils_Tuple2(
+					_Utils_update(
+						newModel,
+						{uid: newUid}),
+					elm$core$Platform$Cmd$none);
+			case 'RemoveLink':
+				var id = msg.a;
+				return _Utils_Tuple2(
+					A2(
+						author$project$App$CategoryTable$Category$Model$asLinksIn,
+						model,
+						A2(
+							elm$core$List$filter,
+							function (l) {
+								return !_Utils_eq(l.id, id);
+							},
+							model.links)),
+					elm$core$Platform$Cmd$none);
 			default:
 				return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
 		}
@@ -5256,73 +5480,6 @@ var author$project$App$CategoryTable$Update$handleCategoryMsgPassthrough = F3(
 				author$project$App$CategoryTable$Messages$CategoryMsg(id),
 				cmdMsg));
 	});
-var elm$core$Basics$neq = _Utils_notEqual;
-var elm$core$List$foldrHelper = F4(
-	function (fn, acc, ctr, ls) {
-		if (!ls.b) {
-			return acc;
-		} else {
-			var a = ls.a;
-			var r1 = ls.b;
-			if (!r1.b) {
-				return A2(fn, a, acc);
-			} else {
-				var b = r1.a;
-				var r2 = r1.b;
-				if (!r2.b) {
-					return A2(
-						fn,
-						a,
-						A2(fn, b, acc));
-				} else {
-					var c = r2.a;
-					var r3 = r2.b;
-					if (!r3.b) {
-						return A2(
-							fn,
-							a,
-							A2(
-								fn,
-								b,
-								A2(fn, c, acc)));
-					} else {
-						var d = r3.a;
-						var r4 = r3.b;
-						var res = (ctr > 500) ? A3(
-							elm$core$List$foldl,
-							fn,
-							acc,
-							elm$core$List$reverse(r4)) : A4(elm$core$List$foldrHelper, fn, acc, ctr + 1, r4);
-						return A2(
-							fn,
-							a,
-							A2(
-								fn,
-								b,
-								A2(
-									fn,
-									c,
-									A2(fn, d, res))));
-					}
-				}
-			}
-		}
-	});
-var elm$core$List$foldr = F3(
-	function (fn, acc, ls) {
-		return A4(elm$core$List$foldrHelper, fn, acc, 0, ls);
-	});
-var elm$core$List$filter = F2(
-	function (isGood, list) {
-		return A3(
-			elm$core$List$foldr,
-			F2(
-				function (x, xs) {
-					return isGood(x) ? A2(elm$core$List$cons, x, xs) : xs;
-				}),
-			_List_Nil,
-			list);
-	});
 var author$project$App$CategoryTable$Update$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -5387,20 +5544,46 @@ var author$project$App$Model$setStoredModel = F2(
 var author$project$App$Model$asStoredModelIn = author$project$Utils$flip(author$project$App$Model$setStoredModel);
 var author$project$App$Update$update = F2(
 	function (msg, model) {
-		if (msg.$ === 'NoOp') {
-			return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
-		} else {
-			var tableMsg = msg.a;
-			var _n1 = A2(author$project$App$CategoryTable$Update$update, tableMsg, model.storedModel.categoryTable);
-			var tableModel = _n1.a;
-			var tableCmd = _n1.b;
-			return _Utils_Tuple2(
-				A2(
-					author$project$App$Model$asStoredModelIn,
-					model,
-					A2(author$project$App$Model$asCategoryTableIn, model.storedModel, tableModel)),
-				A2(elm$core$Platform$Cmd$map, author$project$App$Messages$CategoryTableMsg, tableCmd));
+		switch (msg.$) {
+			case 'NoOp':
+				return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+			case 'CategoryTableMsg':
+				var tableMsg = msg.a;
+				var _n1 = A2(author$project$App$CategoryTable$Update$update, tableMsg, model.storedModel.categoryTable);
+				var tableModel = _n1.a;
+				var tableCmd = _n1.b;
+				return _Utils_Tuple2(
+					A2(
+						author$project$App$Model$asStoredModelIn,
+						model,
+						A2(author$project$App$Model$asCategoryTableIn, model.storedModel, tableModel)),
+					A2(elm$core$Platform$Cmd$map, author$project$App$Messages$CategoryTableMsg, tableCmd));
+			default:
+				var updatedEditMode = !model.editMode;
+				var storedModel = updatedEditMode ? A2(
+					author$project$App$Model$asCategoryTableIn,
+					model.storedModel,
+					author$project$App$CategoryTable$Model$initEdit(model.storedModel.categoryTable)) : model.storedModel;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{editMode: updatedEditMode, storedModel: storedModel}),
+					elm$core$Platform$Cmd$none);
 		}
+	});
+var author$project$App$Update$updateWithStorage = F2(
+	function (msg, model) {
+		var _n0 = A2(author$project$App$Update$update, msg, model);
+		var newModel = _n0.a;
+		var cmds = _n0.b;
+		return _Utils_Tuple2(
+			newModel,
+			elm$core$Platform$Cmd$batch(
+				_List_fromArray(
+					[
+						author$project$App$Update$setStorage(newModel.storedModel),
+						cmds
+					])));
 	});
 var author$project$App$CategoryTable$Messages$Add = {$: 'Add'};
 var author$project$App$CategoryTable$Messages$AddMode = {$: 'AddMode'};
@@ -5452,7 +5635,6 @@ var elm$html$Html$input = _VirtualDom_node('input');
 var elm$html$Html$span = _VirtualDom_node('span');
 var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
-var elm$json$Json$Encode$string = _Json_wrap;
 var elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
 		return A2(
@@ -5461,20 +5643,6 @@ var elm$html$Html$Attributes$stringProperty = F2(
 			elm$json$Json$Encode$string(string));
 	});
 var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
-var elm$core$List$map = F2(
-	function (f, xs) {
-		return A3(
-			elm$core$List$foldr,
-			F2(
-				function (x, acc) {
-					return A2(
-						elm$core$List$cons,
-						f(x),
-						acc);
-				}),
-			_List_Nil,
-			xs);
-	});
 var elm$core$Tuple$second = function (_n0) {
 	var y = _n0.b;
 	return y;
@@ -5618,6 +5786,9 @@ var author$project$App$CategoryTable$Category$View$viewAddButton = function (exp
 				_List_Nil)
 			]));
 };
+var author$project$App$CategoryTable$Category$Messages$RemoveLink = function (a) {
+	return {$: 'RemoveLink', a: a};
+};
 var elm$html$Html$a = _VirtualDom_node('a');
 var elm$html$Html$Attributes$href = function (url) {
 	return A2(
@@ -5625,39 +5796,52 @@ var elm$html$Html$Attributes$href = function (url) {
 		'href',
 		_VirtualDom_noJavaScriptUri(url));
 };
-var author$project$App$CategoryTable$Link$View$view = function (model) {
-	return A2(
-		elm$html$Html$a,
-		_List_fromArray(
+var author$project$App$CategoryTable$Link$View$view = F2(
+	function (editMode, model) {
+		var attributes = editMode ? _List_fromArray(
+			[
+				elm$html$Html$Events$onClick(
+				author$project$App$CategoryTable$Category$Messages$RemoveLink(model.id)),
+				elm$html$Html$Attributes$href('#')
+			]) : _List_fromArray(
 			[
 				elm$html$Html$Attributes$href(model.url)
-			]),
-		_List_fromArray(
-			[
-				A2(
-				elm$html$Html$span,
-				_List_fromArray(
-					[
-						elm$html$Html$Attributes$class('item')
-					]),
-				_List_fromArray(
-					[
-						elm$html$Html$text(model.name)
-					]))
-			]));
-};
+			]);
+		return A2(
+			elm$html$Html$a,
+			attributes,
+			_List_fromArray(
+				[
+					A2(
+					elm$html$Html$span,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$classList(
+							_List_fromArray(
+								[
+									_Utils_Tuple2('item', true),
+									_Utils_Tuple2('crossOut', editMode)
+								]))
+						]),
+					_List_fromArray(
+						[
+							elm$html$Html$text(model.name)
+						]))
+				]));
+	});
 var elm$html$Html$td = _VirtualDom_node('td');
-var elm$virtual_dom$VirtualDom$lazy = _VirtualDom_lazy;
-var elm$html$Html$Lazy$lazy = elm$virtual_dom$VirtualDom$lazy;
-var author$project$App$CategoryTable$Category$View$viewLinks = function (links) {
-	return A2(
-		elm$html$Html$td,
-		_List_Nil,
-		A2(
-			elm$core$List$map,
-			elm$html$Html$Lazy$lazy(author$project$App$CategoryTable$Link$View$view),
-			links));
-};
+var elm$virtual_dom$VirtualDom$lazy2 = _VirtualDom_lazy2;
+var elm$html$Html$Lazy$lazy2 = elm$virtual_dom$VirtualDom$lazy2;
+var author$project$App$CategoryTable$Category$View$viewLinks = F2(
+	function (editMode, links) {
+		return A2(
+			elm$html$Html$td,
+			_List_Nil,
+			A2(
+				elm$core$List$map,
+				A2(elm$html$Html$Lazy$lazy2, author$project$App$CategoryTable$Link$View$view, editMode),
+				links));
+	});
 var elm$html$Html$tr = _VirtualDom_node('tr');
 var author$project$App$CategoryTable$Category$View$view = F2(
 	function (editMode, model) {
@@ -5704,7 +5888,7 @@ var author$project$App$CategoryTable$Category$View$view = F2(
 				[
 					removeButton,
 					title,
-					author$project$App$CategoryTable$Category$View$viewLinks(model.links),
+					A2(author$project$App$CategoryTable$Category$View$viewLinks, editMode, model.links),
 					addButton
 				]));
 	});
@@ -5758,6 +5942,29 @@ var author$project$App$CategoryTable$View$view = F2(
 				]),
 			content);
 	});
+var author$project$App$Messages$ToggleEditMode = {$: 'ToggleEditMode'};
+var author$project$App$Footer$View$viewEdit = function (editMode) {
+	var iconBackground = editMode ? 'base04' : 'base03';
+	return A2(
+		elm$html$Html$div,
+		_List_fromArray(
+			[
+				elm$html$Html$Attributes$id('editIcon'),
+				elm$html$Html$Attributes$class('circle background-' + iconBackground),
+				elm$html$Html$Events$onClick(author$project$App$Messages$ToggleEditMode)
+			]),
+		_List_Nil);
+};
+var elm$html$Html$footer = _VirtualDom_node('footer');
+var author$project$App$Footer$View$view = function (model) {
+	return A2(
+		elm$html$Html$footer,
+		_List_Nil,
+		_List_fromArray(
+			[
+				author$project$App$Footer$View$viewEdit(model.editMode)
+			]));
+};
 var elm$html$Html$h1 = _VirtualDom_node('h1');
 var author$project$App$View$viewGreeting = function (greeting) {
 	return A2(
@@ -5781,7 +5988,8 @@ var author$project$App$View$viewBody = function (model) {
 				A2(
 				elm$html$Html$map,
 				author$project$App$Messages$CategoryTableMsg,
-				A2(author$project$App$CategoryTable$View$view, model.editMode, model.storedModel.categoryTable))
+				A2(author$project$App$CategoryTable$View$view, model.editMode, model.storedModel.categoryTable)),
+				author$project$App$Footer$View$view(model)
 			]));
 };
 var author$project$App$View$view = function (model) {
@@ -6025,7 +6233,7 @@ var elm$json$Json$Decode$list = _Json_decodeList;
 var elm$json$Json$Decode$null = _Json_decodeNull;
 var elm$json$Json$Decode$oneOf = _Json_oneOf;
 var author$project$Main$main = elm$browser$Browser$document(
-	{init: author$project$App$Model$init, subscriptions: author$project$App$Subscriptions$subscriptions, update: author$project$App$Update$update, view: author$project$App$View$view});
+	{init: author$project$App$Model$init, subscriptions: author$project$App$Subscriptions$subscriptions, update: author$project$App$Update$updateWithStorage, view: author$project$App$View$view});
 _Platform_export({'Main':{'init':author$project$Main$main(
 	elm$json$Json$Decode$oneOf(
 		_List_fromArray(
@@ -6072,51 +6280,61 @@ _Platform_export({'Main':{'init':author$project$Main$main(
 																function (urlField) {
 																	return A2(
 																		elm$json$Json$Decode$andThen,
-																		function (nameField) {
+																		function (uid) {
 																			return A2(
 																				elm$json$Json$Decode$andThen,
-																				function (name) {
+																				function (nameField) {
 																					return A2(
 																						elm$json$Json$Decode$andThen,
-																						function (links) {
+																						function (name) {
 																							return A2(
 																								elm$json$Json$Decode$andThen,
-																								function (id) {
+																								function (links) {
 																									return A2(
 																										elm$json$Json$Decode$andThen,
-																										function (color) {
+																										function (id) {
 																											return A2(
 																												elm$json$Json$Decode$andThen,
-																												function (addMode) {
-																													return elm$json$Json$Decode$succeed(
-																														{addMode: addMode, color: color, id: id, links: links, name: name, nameField: nameField, urlField: urlField});
+																												function (color) {
+																													return A2(
+																														elm$json$Json$Decode$andThen,
+																														function (addMode) {
+																															return elm$json$Json$Decode$succeed(
+																																{addMode: addMode, color: color, id: id, links: links, name: name, nameField: nameField, uid: uid, urlField: urlField});
+																														},
+																														A2(elm$json$Json$Decode$field, 'addMode', elm$json$Json$Decode$bool));
 																												},
-																												A2(elm$json$Json$Decode$field, 'addMode', elm$json$Json$Decode$bool));
+																												A2(elm$json$Json$Decode$field, 'color', elm$json$Json$Decode$string));
 																										},
-																										A2(elm$json$Json$Decode$field, 'color', elm$json$Json$Decode$string));
+																										A2(elm$json$Json$Decode$field, 'id', elm$json$Json$Decode$int));
 																								},
-																								A2(elm$json$Json$Decode$field, 'id', elm$json$Json$Decode$int));
-																						},
-																						A2(
-																							elm$json$Json$Decode$field,
-																							'links',
-																							elm$json$Json$Decode$list(
 																								A2(
-																									elm$json$Json$Decode$andThen,
-																									function (url) {
-																										return A2(
+																									elm$json$Json$Decode$field,
+																									'links',
+																									elm$json$Json$Decode$list(
+																										A2(
 																											elm$json$Json$Decode$andThen,
-																											function (name) {
-																												return elm$json$Json$Decode$succeed(
-																													{name: name, url: url});
+																											function (url) {
+																												return A2(
+																													elm$json$Json$Decode$andThen,
+																													function (name) {
+																														return A2(
+																															elm$json$Json$Decode$andThen,
+																															function (id) {
+																																return elm$json$Json$Decode$succeed(
+																																	{id: id, name: name, url: url});
+																															},
+																															A2(elm$json$Json$Decode$field, 'id', elm$json$Json$Decode$int));
+																													},
+																													A2(elm$json$Json$Decode$field, 'name', elm$json$Json$Decode$string));
 																											},
-																											A2(elm$json$Json$Decode$field, 'name', elm$json$Json$Decode$string));
-																									},
-																									A2(elm$json$Json$Decode$field, 'url', elm$json$Json$Decode$string)))));
+																											A2(elm$json$Json$Decode$field, 'url', elm$json$Json$Decode$string)))));
+																						},
+																						A2(elm$json$Json$Decode$field, 'name', elm$json$Json$Decode$string));
 																				},
-																				A2(elm$json$Json$Decode$field, 'name', elm$json$Json$Decode$string));
+																				A2(elm$json$Json$Decode$field, 'nameField', elm$json$Json$Decode$string));
 																		},
-																		A2(elm$json$Json$Decode$field, 'nameField', elm$json$Json$Decode$string));
+																		A2(elm$json$Json$Decode$field, 'uid', elm$json$Json$Decode$int));
 																},
 																A2(elm$json$Json$Decode$field, 'urlField', elm$json$Json$Decode$string)))));
 											},

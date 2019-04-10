@@ -3,7 +3,7 @@ module App.CategoryTable.Category.View exposing ( view )
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
-import Html.Lazy exposing (lazy)
+import Html.Lazy exposing (lazy, lazy2)
 import Utils exposing (onEnter)
 --import Html.Events exposing
 
@@ -42,14 +42,14 @@ view editMode model =
       ]
       [ removeButton
       , title
-      , viewLinks model.links
+      , viewLinks editMode model.links
       , addButton
       ]
 
-viewLinks : List LinkModel.Model -> Html Msg
-viewLinks links =
+viewLinks : Bool -> List LinkModel.Model -> Html Msg
+viewLinks editMode links =
   td [] <|
-    List.map (lazy LinkView.view) links
+    List.map (lazy2 LinkView.view editMode) links
 
 viewAddButton : Bool -> Html Msg
 viewAddButton expanded = 

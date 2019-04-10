@@ -7,3 +7,4 @@ type Msg
     | UpdateUrlField String
     | UpdateNameField String
     | RemoveCategory
+    | RemoveLink Int

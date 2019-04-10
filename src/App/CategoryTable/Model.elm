@@ -1,4 +1,5 @@
-module App.CategoryTable.Model exposing (Model, emptyCategoryTable, setCategories, addCategory, setUid, asCategoriesIn )
+module App.CategoryTable.Model exposing 
+    (Model, emptyCategoryTable, setCategories, addCategory, setUid, asCategoriesIn, initEdit)
 
 import App.CategoryTable.Category.Model as CategoryModel
 import Utils exposing ( flip )
@@ -14,6 +15,14 @@ emptyCategoryTable : Model
 emptyCategoryTable =
     { categories = []
     , uid = 0
+    , addMode = False
+    , inputField = ""
+    }
+
+initEdit : Model -> Model
+initEdit previous =
+    { previous 
+    | categories = List.map CategoryModel.initEdit previous.categories 
     , addMode = False
     , inputField = ""
     }

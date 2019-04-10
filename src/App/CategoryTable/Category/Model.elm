@@ -1,4 +1,4 @@
-module App.CategoryTable.Category.Model exposing ( Model, newCategory, addLink)
+module App.CategoryTable.Category.Model exposing ( Model, newCategory, addLink, asLinksIn, initEdit)
 
 import App.CategoryTable.Link.Model as LinkModel
 import Utils exposing (flip)
@@ -11,6 +11,7 @@ type alias Model =
     , addMode : Bool
     , nameField : String
     , urlField : String
+    , uid : Int
     }
 
 newCategory : String -> String -> Int -> Model
@@ -22,6 +23,15 @@ newCategory name color id =
     , addMode = False
     , nameField = ""
     , urlField = ""
+    , uid = 0
+    }
+
+initEdit : Model -> Model
+initEdit previous =
+    { previous 
+    | nameField = "" 
+    , urlField = "" 
+    , addMode = False 
     }
 
 setLinks : List LinkModel.Model -> Model -> Model

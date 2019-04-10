@@ -94,6 +94,24 @@ a{
   color:var(--base06);
   transition: color var(--transition);
   padding:0px 10px;
+  position:relative;
+  cursor: pointer;
+}
+
+.category .item.crossOut:before{
+  content:"";
+  position:absolute;
+  display:block;
+  left:0;
+  top:13px;
+  height:4px;
+  width:0px;
+  background:var(--base06);
+  transition: width var(--transition);
+}
+
+.category .item.crossOut:hover:before{
+  width:100%;
 }
 
 .category a:after{

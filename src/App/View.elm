@@ -7,6 +7,7 @@ import Browser.Dom as Dom
 import App.Model exposing (Model)
 import App.Messages exposing (Msg(..))
 import App.CategoryTable.View
+import App.Footer.View
 
 view : Model -> Browser.Document Msg
 view model = 
@@ -22,6 +23,7 @@ viewBody model =
         [ viewGreeting model.storedModel.greeting
         , Html.map CategoryTableMsg 
             (App.CategoryTable.View.view model.editMode model.storedModel.categoryTable )
+        , App.Footer.View.view model
         ]
 
 

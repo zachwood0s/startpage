@@ -1,9 +1,9 @@
-port module Main exposing (..)
+module Main exposing (..)
 
 import Browser
 import App.Model exposing (Flags, StoredModel, Model, init)
 import App.Messages exposing (Msg)
-import App.Update exposing (update)
+import App.Update exposing (updateWithStorage)
 import App.View exposing (view)
 import App.Subscriptions exposing (subscriptions)
 
@@ -12,8 +12,6 @@ main =
   Browser.document
     { init = init
     , view = view
-    , update = update
+    , update = updateWithStorage
     , subscriptions = subscriptions
     }
-
-port setStorage : StoredModel -> Cmd msg

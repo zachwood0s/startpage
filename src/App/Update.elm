@@ -1,8 +1,21 @@
-module App.Update exposing (update)
+port module App.Update exposing (updateWithStorage)
 
 import App.Messages exposing (Msg(..))
-import App.Model exposing (Model, asCategoryTableIn, asStoredModelIn)
+import App.Model exposing (Model, StoredModel, asCategoryTableIn, asStoredModelIn)
 import App.CategoryTable.Update
+import App.CategoryTable.Model exposing (initEdit)
+
+port setStorage : StoredModel -> Cmd msg
+
+updateWithStorage : Msg -> Model -> ( Model, Cmd Msg )
+updateWithStorage msg model =
+  let
+    ( newModel, cmds ) =
+      update msg model
+  in
+    ( newModel
+    , Cmd.batch [ setStorage newModel.storedModel, cmds ]
+    )
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model = 
@@ -19,3 +32,18 @@ update msg model =
           |> asStoredModelIn model
         , Cmd.map CategoryTableMsg tableCmd
         )
+    
+    ToggleEditMode ->
+      let 
+        updatedEditMode = not model.editMode
+        storedModel = 
+          if updatedEditMode then 
+            initEdit model.storedModel.categoryTable
+            |> asCategoryTableIn model.storedModel
+          else model.storedModel
+      in
+        ( { model 
+          | editMode = updatedEditMode
+          , storedModel = storedModel 
+          }
+        , Cmd.none )

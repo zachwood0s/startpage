@@ -18,13 +18,13 @@ type alias Flags = Maybe StoredModel
 
 init : Maybe StoredModel -> ( Model, Cmd Msg )
 init maybeModel =
-    ( emptyModel emptyStoredModel
+    ( emptyModel ( Maybe.withDefault emptyStoredModel maybeModel)
     , Cmd.none
     )
 
 emptyModel : StoredModel -> Model
 emptyModel stored = 
-    Model stored True 
+    Model stored False 
 
 emptyStoredModel : StoredModel
 emptyStoredModel = 
