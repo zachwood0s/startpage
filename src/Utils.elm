@@ -19,3 +19,21 @@ onEnter msg =
         Json.fail "not ENTER"
   in
     on "keydown" (Json.andThen isEnter keyCode)
+
+
+type alias Enum a = 
+  { values : List a
+  , toString : a -> String
+  }
+
+findEnumValue : Enum a -> String -> Maybe a
+findEnumValue enum value =
+  enum.values
+  |> List.filter ((==) value << enum.toString )
+  |> List.head
+
+decodeEnumValue : Enum a -> String -> Decoder a
+decodeEnumValue enum stringValue =
+  case findEnumValue stringValue of 
+    Just value -> Decode.succeed value
+    Nothing -> Decode.fail <| "Could not decode value to enum: "++stringValue
