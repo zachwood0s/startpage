@@ -1,21 +1,41 @@
-module App.Theme exposing (Theme)
+module App.ColorScheme.Theme exposing (Theme, initTheme, ColorMap, initColorMap, fromColorMap)
 
-import Dict
+import Dict exposing (Dict)
 
-type ThemeColor = ThemeColor String String
+type alias ColorMap = Dict String String
 
-initThemeColors : Enum ThemeColor
-initThemeColors = 
-  { values = 
-    [ ThemeColor "Background"
-    , ThemeColor "Accent1"
-    , ThemeColor "Accent2"
-    , ThemeColor "Accent3"
-    , ThemeColor "Accent4"
+defaultColorMap =
+  Dict.fromList 
+    [ ("base00", "2d2d2d")
+    , ("base01", "393939")
     ]
-  , toString = \(ThemeColor name _) -> name
-  }
+
+initColorMap : Maybe ColorMap -> ColorMap
+initColorMap map =
+  Maybe.withDefault defaultColorMap map
 
 type alias Theme = 
-  { background :  }
+  { background : String
+  , foreground : String
+  }
 
+defaultTheme : Theme
+defaultTheme =
+  { background = "base00"
+  , foreground = "base01"
+  }
+
+initTheme : Maybe Theme -> Theme
+initTheme theme =
+  Maybe.withDefault defaultTheme theme
+
+defaultColor = "000000"
+
+fromColorMap : String -> ColorMap -> String
+fromColorMap value map =
+  case Dict.get value map of
+    Just color -> color
+    Nothing -> defaultColor
+
+mapSelector : ColorMap -> (String -> String)
+mapSelector map = \c -> fromColorMap c map

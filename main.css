@@ -183,6 +183,7 @@ footer .circle{
 }
 
 .addButton input{
+  width:140px;
   visibility: hidden;
   display:none
 }
