@@ -1,4 +1,4 @@
-module Utils exposing ( flip, onEnter, consIf, appendIf)
+module Utils exposing ( flip, onEnter, consIf, appendIf, strConsIf, strAppendIf)
 
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
@@ -33,3 +33,17 @@ appendIf shouldAdd elm list =
     list ++ [elm]
   else 
     list
+
+strConsIf : Bool -> Char -> String -> String
+strConsIf shouldAdd x xs =
+  if shouldAdd then 
+    String.cons x xs 
+  else 
+    xs
+
+strAppendIf : Bool -> String -> String -> String 
+strAppendIf shouldAdd x xs =
+  if shouldAdd then 
+    String.append xs x
+  else 
+    xs

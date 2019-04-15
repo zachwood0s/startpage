@@ -4,18 +4,41 @@ import Css exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onClick)
+import Time
 
-import App.Model exposing (Model)
+import App.Footer.Model exposing (Model)
 import App.Messages exposing (Msg(..))
 import App.Theme.SharedStyles as Styles
 import App.Theme.ColorScheme exposing (Theme, ColorMapping)
+import Utils
 
-view : ColorMapping -> Theme -> Model -> Html Msg
-view colors theme model = 
+view : ColorMapping -> Theme -> Bool -> Model -> Html Msg
+view colors theme editMode model = 
   footer 
     [ css [ footerStyle colors theme ]]
-    [ viewEdit colors theme model.editMode 
+    [ viewTime colors theme model.time model.zone
+    , viewEdit colors theme editMode 
     ]
+
+viewTime : ColorMapping -> Theme -> Time.Posix -> Time.Zone -> Html Msg
+viewTime colors theme time zone =
+  let 
+    hour = Time.toHour zone time 
+    minute = Time.toMinute zone time 
+
+    printedHour = 
+      String.fromInt hour 
+      |> Utils.strConsIf (hour < 10) '0' 
+
+    printedMinute = 
+      String.fromInt minute 
+      |> Utils.strConsIf (minute < 10) '0'
+
+  in
+    div 
+      [ css [ clockStyle colors theme ] ]
+      [ text (printedHour ++ ":" ++ printedMinute) ]
+
 
 viewEdit : ColorMapping -> Theme -> Bool -> Html Msg
 viewEdit colors theme editMode =
@@ -31,6 +54,15 @@ viewEdit colors theme editMode =
       ] []
 
 -- Styles
+
+clockStyle : ColorMapping -> Theme -> Style 
+clockStyle colors theme =
+  Css.batch 
+    [ position absolute 
+    , left (px 20)
+    , fontSize (px 40)
+    , color <| colors theme.footer.clockColor
+    ]
 
 footerStyle : ColorMapping -> Theme -> Style 
 footerStyle colors theme =

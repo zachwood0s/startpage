@@ -1,6 +1,6 @@
 module App.Footer.Update exposing (update)
 
-import App.Footer.Messages exposing (Msg)
+import App.Footer.Messages exposing (Msg(..))
 import App.Footer.Model exposing (Model)
 
 update : Msg -> Model -> ( Model, Cmd Msg )

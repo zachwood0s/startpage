@@ -1,4 +1,4 @@
-module App.Footer.Messages exposing (Msg)
+module App.Footer.Messages exposing (Msg(..))
 
 import Time
 

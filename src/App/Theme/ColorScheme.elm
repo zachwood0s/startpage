@@ -59,6 +59,7 @@ type alias Theme =
       , hover : 
         { background : String }
       }
+    , clockColor : String
     }
   }
 
@@ -93,6 +94,7 @@ defaultTheme =
       , hover = 
         { background = "base02" }
       }
+    , clockColor = "base03"
     }
   }
 

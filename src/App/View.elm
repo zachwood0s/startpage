@@ -45,7 +45,7 @@ viewBody colors model =
             [ viewGreeting colors model.theme model.storedModel.greeting
             , Html.Styled.map CategoryTableMsg 
                 (App.CategoryTable.View.view colors model.theme model.editMode model.storedModel.categoryTable )
-            , App.Footer.View.view colors model.theme model
+            , App.Footer.View.view colors model.theme model.editMode model.footerModel
             ]
         ]
 

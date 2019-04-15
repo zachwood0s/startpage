@@ -1,6 +1,9 @@
-module App.Footer.Model exposing (Model)
+module App.Footer.Model exposing (Model, emptyModel, init)
 
 import Time
+import Task
+
+import App.Footer.Messages exposing (Msg(..))
 
 type alias Model = 
   { time : Time.Posix

@@ -1,4 +1,4 @@
-module App.Model exposing ( Model, StoredModel, Flags, init, asCategoryTableIn, setCategoryTable, asStoredModelIn)
+module App.Model exposing ( Model, StoredModel, Flags, init, asCategoryTableIn, setCategoryTable, asStoredModelIn, asFooterModelIn)
 
 import App.CategoryTable.Model
 import App.Messages exposing (..)
@@ -23,8 +23,12 @@ type alias Flags = Maybe StoredModel
 
 init : Maybe StoredModel -> ( Model, Cmd Msg )
 init maybeModel =
-    ( emptyModel ( Maybe.withDefault emptyStoredModel maybeModel)
-    , Cmd.none
+  let 
+    (footerModel, footerCmd) = App.Footer.Model.init 
+  in
+    ( footerModel 
+    |> asFooterModelIn (emptyModel ( Maybe.withDefault emptyStoredModel maybeModel))
+    , Cmd.map FooterMsg footerCmd
     )
 
 emptyModel : StoredModel -> Model
@@ -32,6 +36,7 @@ emptyModel stored =
     Model stored False 
       (App.Theme.ColorScheme.initColorMap Nothing)
       (App.Theme.ColorScheme.initTheme Nothing)
+      App.Footer.Model.emptyModel
 
 emptyStoredModel : StoredModel
 emptyStoredModel = 
@@ -45,8 +50,15 @@ setStoredModel : StoredModel -> Model -> Model
 setStoredModel stored model =
   { model | storedModel = stored }
 
+setFooterModel : App.Footer.Model.Model -> Model -> Model 
+setFooterModel footer model =
+  { model | footerModel = footer }
+
 asStoredModelIn : Model -> StoredModel -> Model
 asStoredModelIn = flip setStoredModel
+
+asFooterModelIn :  Model -> App.Footer.Model.Model -> Model 
+asFooterModelIn = flip setFooterModel
 
 -- Stored Model Accessors
 
