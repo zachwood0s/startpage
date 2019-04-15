@@ -4,12 +4,14 @@ import App.CategoryTable.Model
 import App.Messages exposing (..)
 import Utils exposing ( flip )
 import App.Theme.ColorScheme exposing (Theme, ColorMap)
+import App.Footer.Model
 
 type alias Model =
   { storedModel : StoredModel
   , editMode : Bool 
   , colorMap : ColorMap
   , theme : Theme
+  , footerModel : App.Footer.Model.Model
   }
 
 type alias StoredModel = 

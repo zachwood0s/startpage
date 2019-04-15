@@ -5,3 +5,4 @@ import Time
 type Msg
     = NoOp
     | OnTime Time.Posix
+    | AdjustTimeZone Time.Zone

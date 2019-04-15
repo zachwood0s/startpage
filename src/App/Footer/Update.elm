@@ -13,4 +13,9 @@ update msg model =
           ( { model | time = t }
           , Cmd.none 
           )
+
+        AdjustTimeZone newZone -> 
+          ( { model | zone = newZone }
+          , Cmd.none 
+          )
             
