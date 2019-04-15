@@ -3,7 +3,7 @@ module App.Model exposing ( Model, StoredModel, Flags, init, asCategoryTableIn, 
 import App.CategoryTable.Model
 import App.Messages exposing (..)
 import Utils exposing ( flip )
-import App.ColorScheme.Theme exposing (Theme, ColorMap)
+import App.Theme.ColorScheme exposing (Theme, ColorMap)
 
 type alias Model =
   { storedModel : StoredModel
@@ -28,8 +28,8 @@ init maybeModel =
 emptyModel : StoredModel -> Model
 emptyModel stored = 
     Model stored False 
-      (App.ColorScheme.Theme.initColorMap Nothing)
-      (App.ColorScheme.Theme.initTheme Nothing)
+      (App.Theme.ColorScheme.initColorMap Nothing)
+      (App.Theme.ColorScheme.initTheme Nothing)
 
 emptyStoredModel : StoredModel
 emptyStoredModel = 

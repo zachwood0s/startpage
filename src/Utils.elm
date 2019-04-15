@@ -1,8 +1,8 @@
-module Utils exposing ( flip, onEnter )
+module Utils exposing ( flip, onEnter, consIf, appendIf)
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
+import Html.Styled exposing (..)
+import Html.Styled.Attributes exposing (..)
+import Html.Styled.Events exposing (..)
 import Json.Decode as Decode exposing (Decoder)
 
 flip : (a -> b -> c) -> b -> a -> c
@@ -20,3 +20,16 @@ onEnter msg =
   in
     on "keydown" (Decode.andThen isEnter keyCode)
 
+consIf : Bool -> a -> List a -> List a
+consIf shouldAdd x xs =
+  if shouldAdd then 
+    x :: xs 
+  else 
+    xs
+
+appendIf : Bool -> a -> List a -> List a 
+appendIf shouldAdd elm list =
+  if shouldAdd then 
+    list ++ [elm]
+  else 
+    list
