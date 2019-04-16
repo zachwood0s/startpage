@@ -2,7 +2,7 @@ module App.Theme.SharedStyles exposing (..)
 
 import Css exposing (..)
 import Css.Transitions exposing (easeInOut, transition)
-import App.Theme.ColorScheme exposing (ColorMapping, Theme)
+import App.Theme.ColorScheme exposing (WrappedTheme)
 
 circle : Float -> Style
 circle diameter =
@@ -24,10 +24,10 @@ widthTransition
   = Css.Transitions.width defaultTransitionTime
 
 addButtonWidthLarge = 375
-addButtonWidth = 210
+addButtonWidth = 222
 
-addButtonStyle : ColorMapping -> Theme -> Float -> Bool -> Style 
-addButtonStyle colors theme expandedWidth expanded = 
+addButtonStyle : WrappedTheme -> Float -> Bool -> Style 
+addButtonStyle wrapped expandedWidth expanded = 
   let
     buttonWidth = 
       if expanded then px expandedWidth
@@ -35,17 +35,18 @@ addButtonStyle colors theme expandedWidth expanded =
     
     background = 
       if expanded then 
-        Css.batch [ backgroundColor <| colors theme.addButton.expanded.background ]
+        Css.batch [ backgroundColor <| wrapped.colors wrapped.theme.addButton.expanded.background ]
       else Css.batch []
 
     hoverStyle = 
       if expanded then 
-        Css.batch [ backgroundColor <| colors theme.addButton.expanded.hover.background ]
-      else Css.batch [ backgroundColor <| colors theme.addButton.hover.background ]
+        Css.batch [ backgroundColor <| wrapped.colors wrapped.theme.addButton.expanded.hover.background ]
+      else Css.batch [ backgroundColor <| wrapped.colors wrapped.theme.addButton.hover.background ]
   in 
     Css.batch   
       [ circle 30
       , Css.width buttonWidth
+      , position relative
       , boxSizing borderBox
       , displayFlex 
       , flexDirection row 
@@ -60,25 +61,25 @@ addButtonStyle colors theme expandedWidth expanded =
         ]
       ]
     
-addButtonSpan : ColorMapping -> Theme -> Bool -> Style 
-addButtonSpan colors theme expanded =
+addButtonSpan : WrappedTheme -> Bool -> Style 
+addButtonSpan wrapped expanded =
   let 
     textColor = 
-      if expanded then theme.addButton.expanded.plusColor 
-      else theme.addButton.plusColor 
+      if expanded then wrapped.theme.addButton.expanded.plusColor 
+      else wrapped.theme.addButton.plusColor 
   in 
     Css.batch 
       [ cursor pointer 
       , fontSize (px 25)
       , marginLeft (px -3)
       , marginRight (px 5)
-      , color <| colors textColor
+      , color <| wrapped.colors textColor
       , transition 
         [ colorTransition ]
       ]
 
-addButtonInput : ColorMapping -> Theme -> Bool -> Style 
-addButtonInput colors theme expanded =
+addButtonInput : WrappedTheme -> Bool -> Style 
+addButtonInput wrapped expanded =
   let 
     expandedStyles =   
       if expanded then 
@@ -98,7 +99,7 @@ addButtonInput colors theme expanded =
       , flexBasis auto
       , padding2 (px 0) (px 10)
       , margin (px 4)
-      , backgroundColor <| colors theme.addButton.input.background
-      , color <| colors theme.addButton.input.foreground
+      , backgroundColor <| wrapped.colors wrapped.theme.addButton.input.background
+      , color <| wrapped.colors wrapped.theme.addButton.input.foreground
       , border (px 0) 
       ]

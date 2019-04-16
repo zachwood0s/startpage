@@ -5,25 +5,23 @@ import Css.Transitions exposing (transition)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (onInput, onClick)
+import Dict
 
 import App.CategoryTable.Model exposing ( Model )
 import App.CategoryTable.Messages exposing ( Msg(..) )
-
 import App.CategoryTable.Category.View 
-
+import App.Theme.SharedStyles as Styles
+import App.Theme.ColorScheme exposing (WrappedTheme)
 import Utils exposing ( onEnter )
 
-import App.Theme.SharedStyles as Styles
-import App.Theme.ColorScheme exposing (Theme, ColorMapping)
-
-view : ColorMapping -> Theme -> Bool -> Model -> Html Msg
-view colors theme editMode model = 
+view : WrappedTheme -> Bool -> Model -> Html Msg
+view wrapped editMode model = 
     let 
         addButton = 
             tr [] 
-                [ td [ colspan 3 ] [ viewAddButton colors theme model.addMode ]] 
+                [ td [ colspan 3 ] [ viewAddButton wrapped model ]] 
         content = 
-            viewCategories colors theme editMode model
+            viewCategories wrapped editMode model
             |> Utils.appendIf editMode addButton
     in
         Html.Styled.table 
@@ -35,112 +33,124 @@ view colors theme editMode model =
             ] 
             content
 
-viewCategories : ColorMapping -> Theme -> Bool -> Model -> List (Html Msg)
-viewCategories colors theme editMode model =
+viewCategories : WrappedTheme -> Bool -> Model -> List (Html Msg)
+viewCategories wrapped editMode model =
     let 
         showCat category = 
             Html.Styled.map 
                 (CategoryMsg category.id) 
-                ( App.CategoryTable.Category.View.view colors theme editMode category )
+                ( App.CategoryTable.Category.View.view wrapped editMode category )
     in
         List.map showCat model.categories
 
-viewAddButton : ColorMapping -> Theme -> Bool -> Html Msg
-viewAddButton colors theme expanded =
-    div
-        [ css 
-            [ Styles.addButtonStyle colors theme Styles.addButtonWidth expanded ]
-        ]
-        [ span
-            [ class "plus" 
-            , onClick AddMode
-            , css [ Styles.addButtonSpan colors theme expanded ]
-            ]
-            [ text "+" ]
-        , input
-            [ placeholder "Name" 
-            , onInput UpdateField
-            , onEnter Add
-            , css [ Styles.addButtonInput colors theme expanded ]
-            ] []
-        ]
+viewAddButton : WrappedTheme -> Model -> Html Msg
+viewAddButton wrapped model =
+    let 
+        addButtonWidth = 
+            if model.colorMode then 300
+            else Styles.addButtonWidth 
 
--- Styles
-{-
-addButtonStyle : ColorMapping -> Theme -> Float -> Bool -> Style 
-addButtonStyle colors theme expandedWidth expanded = 
-    let
-        buttonWidth = 
-            if expanded then px expandedWidth
-            else px 30
-        
-        background = 
-            if expanded then 
-                Css.batch [ backgroundColor <| colors theme.addButton.expanded.background ]
-            else Css.batch []
-
-        hoverStyle = 
-            if expanded then 
-                Css.batch [ backgroundColor <| colors theme.addButton.expanded.hover.background ]
-            else Css.batch [ backgroundColor <| colors theme.addButton.hover.background ]
-    in 
-        Css.batch   
-            [ Styles.circle 30
-            , Css.width buttonWidth
-            , boxSizing borderBox
-            , displayFlex 
-            , flexDirection row 
-            , padding2 (px 0) (px 10)
-            , overflow Css.hidden 
-            , background
-            , hover 
-                [ hoverStyle ]
-            , transition
-                [ Styles.widthTransition
-                , Styles.backgroundTransition 
+        content = 
+            [ span
+                [ class "plus" 
+                , onClick AddMode
+                , css [ Styles.addButtonSpan wrapped model.addMode ]
                 ]
+                [ text "+" ]
+            , input
+                [ placeholder "Name" 
+                , onInput UpdateField
+                , onEnter Add
+                , css [ Styles.addButtonInput wrapped model.addMode ]
+                ] []
             ]
-    
-addButtonSpan : ColorMapping -> Theme -> Bool -> Style 
-addButtonSpan colors theme expanded =
-    let 
-        textColor = 
-            if expanded then theme.addButton.expanded.plusColor 
-            else theme.addButton.plusColor 
+            |> Utils.consIf model.addMode (viewColorSelector wrapped model)
     in 
-        Css.batch 
-            [ cursor pointer 
-            , fontSize (px 25)
-            , marginLeft (px -3)
-            , marginRight (px 5)
-            , color <| colors textColor
-            , transition 
-                [ Styles.colorTransition ]
+        div
+            [ css 
+                [ Styles.addButtonStyle wrapped addButtonWidth model.addMode ]
             ]
+            content
 
-addButtonInput : ColorMapping -> Theme -> Bool -> Style 
-addButtonInput colors theme expanded =
+viewColorSelector : WrappedTheme -> Model -> Html Msg
+viewColorSelector wrapped model =
     let 
-        expandedStyles =   
-            if expanded then 
-                Css.batch 
-                    [ visibility Css.visible 
-                    , display inline 
+        accentColors = 
+            List.filter (String.startsWith "accent") (Dict.keys wrapped.colorMap)
+
+        defaultColor =
+            accentColors 
+            |> List.head
+            |> Maybe.withDefault "accent00"
+
+        selectorStyle = 
+            [ colorSelectorStyle wrapped ]
+            |> Utils.appendIf model.colorMode 
+                (colorSelectorStyleExpanded <| List.length accentColors)
+        
+        content = 
+            if not model.colorMode then 
+                [ span 
+                    [ css 
+                        [ colorItemStyle 
+                        , backgroundColor <| wrapped.colors model.selectedColor
+                        ]
+                    , onClick EnterColorMode
                     ]
+                    []
+                ]
             else 
-                Css.batch
-                    [ display none 
-                    , visibility Css.hidden
-                    ]
-    in 
-        Css.batch 
-            [ Css.width (px 140)
-            , expandedStyles
-            , flexBasis auto
-            , padding2 (px 0) (px 10)
-            , margin (px 4)
-            , backgroundColor <| colors theme.addButton.input.background
-            , color <| colors theme.addButton.input.foreground
-            , border (px 0) 
+                List.map (viewColorItem wrapped) accentColors
+    in
+        div 
+            [ css selectorStyle ] 
+            content
+
+viewColorItem : WrappedTheme -> String -> Html Msg
+viewColorItem wrapped color = 
+    span 
+        [ css 
+            [ colorItemStyle
+            , backgroundColor <| wrapped.colors color 
+            , marginLeft (px colorItemSpacing)
             ]
-            -}
+        , onClick (UpdateColor color)
+        ]
+        []
+
+-- Styles 
+
+colorItemDiameter = 20.0
+colorItemSpacing = 4.0
+
+colorSelectorStyleExpanded : Int -> Style
+colorSelectorStyleExpanded itemCount =
+    let 
+        totalItemWidth = (toFloat itemCount) * colorItemDiameter
+        spacingWidth = (toFloat (itemCount - 1)) * colorItemSpacing
+        expandedWidth = spacingWidth + totalItemWidth
+    in
+        Css.batch 
+            [ Css.width (px expandedWidth)]
+
+colorSelectorStyle : WrappedTheme -> Style 
+colorSelectorStyle wrapped =
+    Css.batch 
+        [ position absolute 
+        , right (px 0)
+        , top (px 0)
+        , Styles.circle 30 
+        , backgroundColor <| wrapped.colors wrapped.theme.addButton.expanded.background
+        , transition 
+            [ Styles.widthTransition ]
+        ]
+
+colorItemStyle : Style 
+colorItemStyle =
+    Css.batch 
+        [ Styles.circle colorItemDiameter 
+        , display inlineBlock
+        , marginTop (px 5)
+        , cursor pointer
+        ]
+

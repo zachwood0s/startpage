@@ -9,6 +9,8 @@ type alias Model =
     , uid : Int
     , addMode : Bool
     , inputField : String
+    , selectedColor : String
+    , colorMode : Bool
     }
 
 emptyCategoryTable : Model
@@ -17,6 +19,8 @@ emptyCategoryTable =
     , uid = 0
     , addMode = False
     , inputField = ""
+    , colorMode = False
+    , selectedColor = ""
     }
 
 initEdit : Model -> Model
@@ -25,6 +29,8 @@ initEdit previous =
     | categories = List.map CategoryModel.initEdit previous.categories 
     , addMode = False
     , inputField = ""
+    , colorMode = False 
+    , selectedColor = "accent00"
     }
 
 setCategories : List CategoryModel.Model -> Model -> Model

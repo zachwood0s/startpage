@@ -9,12 +9,12 @@ import Html.Styled.Events exposing (onClick)
 import App.CategoryTable.Category.Messages exposing ( Msg(..) )
 import App.CategoryTable.Link.Model exposing (Model)
 
-import App.Theme.ColorScheme exposing (ColorMapping, Theme)
+import App.Theme.ColorScheme exposing (WrappedTheme)
 import App.Theme.SharedStyles as Styles
 import Utils
 
-view : ColorMapping -> Theme -> Bool -> Model -> Html Msg
-view colors theme editMode model = 
+view : WrappedTheme -> Bool -> Model -> Html Msg
+view wrapped editMode model = 
   let 
     linkAttr =
       if editMode then
@@ -23,20 +23,20 @@ view colors theme editMode model =
         ]
       else [ href model.url ]
 
-    attributes = css [ aStyle colors theme ] :: linkAttr 
+    attributes = css [ aStyle wrapped ] :: linkAttr 
   in
     a 
       attributes
       [ span
         [ css
-          [ linkStyles colors theme editMode ]
+          [ linkStyles wrapped editMode ]
         ]
         [ text model.name ]
       ]
 
 
-linkStyles : ColorMapping -> Theme -> Bool -> Style
-linkStyles colors theme editMode =
+linkStyles : WrappedTheme -> Bool -> Style
+linkStyles wrapped editMode =
   let 
     crossOut = 
       if editMode then 
@@ -48,7 +48,7 @@ linkStyles colors theme editMode =
           , top (px 13)
           , Css.height (px 4)
           , Css.width (px 0)
-          , backgroundColor <| colors theme.links
+          , backgroundColor <| wrapped.colors wrapped.theme.links
           , transition 
             [ Styles.widthTransition ]
           , hover 
@@ -57,7 +57,7 @@ linkStyles colors theme editMode =
       else Css.batch []
   in 
     Css.batch 
-      [ color <| colors theme.links 
+      [ color <| wrapped.colors wrapped.theme.links 
       , padding2 (px 0) (px 10)
       , position relative
       , cursor pointer 
@@ -69,15 +69,15 @@ linkStyles colors theme editMode =
         [ Styles.colorTransition ]
       ]
 
-aStyle : ColorMapping -> Theme -> Style
-aStyle colors theme = 
+aStyle : WrappedTheme -> Style
+aStyle wrapped = 
   Css.batch 
     [ after 
       [ Css.property "content" "'|'"
       , position relative 
       , left (px 0)
       , marginTop (px -2)
-      , color <| colors theme.links 
+      , color <| wrapped.colors wrapped.theme.links 
       ]
     , lastChild 
       [ after 

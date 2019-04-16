@@ -10,24 +10,25 @@ import App.Messages exposing (Msg(..))
 import App.CategoryTable.View
 import App.Footer.View
 
-import App.Theme.ColorScheme exposing (ColorMapping, Theme)
+import App.Theme.ColorScheme exposing (WrappedTheme)
 
 view : Model -> Browser.Document Msg
 view model = 
     let 
-        unstyled = viewBody colors >> toUnstyled
         colors = App.Theme.ColorScheme.mapSelector model.colorMap 
+        wrappedTheme = WrappedTheme model.theme model.colorMap colors
+        unstyled = viewBody wrappedTheme >> toUnstyled
     in 
         { title = "New Tab test"
         , body = [ unstyled model ]
         }
 
 
-viewBody : ColorMapping -> Model -> Html Msg
-viewBody colors model =
+viewBody : WrappedTheme -> Model -> Html Msg
+viewBody wrapped model =
     section 
         [ css 
-            [ backgroundColor <| colors model.theme.background 
+            [ backgroundColor <| wrapped.colors model.theme.background 
             , position absolute
             , Css.width (pct 100)
             , Css.height (pct 100)
@@ -42,20 +43,20 @@ viewBody colors model =
                 , textAlign center 
                 ]
             ] 
-            [ viewGreeting colors model.theme model.storedModel.greeting
+            [ viewGreeting wrapped model.storedModel.greeting
             , Html.Styled.map CategoryTableMsg 
-                (App.CategoryTable.View.view colors model.theme model.editMode model.storedModel.categoryTable )
-            , App.Footer.View.view colors model.theme model.editMode model.footerModel
+                (App.CategoryTable.View.view wrapped model.editMode model.storedModel.categoryTable )
+            , App.Footer.View.view wrapped model.editMode model.footerModel
             ]
         ]
 
 
-viewGreeting : ColorMapping -> Theme -> String -> Html Msg
-viewGreeting colors theme greeting = 
+viewGreeting : WrappedTheme -> String -> Html Msg
+viewGreeting wrapped greeting = 
     h1 
         [ css 
             [ greetingFont 
-            , color <| colors theme.title]
+            , color <| wrapped.colors wrapped.theme.title]
         ] 
         [ text greeting ]
 

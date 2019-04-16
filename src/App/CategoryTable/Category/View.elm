@@ -12,11 +12,11 @@ import App.CategoryTable.Category.Model exposing ( Model )
 import App.CategoryTable.Category.Messages exposing ( Msg(..) )
 import App.CategoryTable.Link.Model as LinkModel
 import App.CategoryTable.Link.View as LinkView
-import App.Theme.ColorScheme exposing (ColorMapping, Theme)
+import App.Theme.ColorScheme exposing (WrappedTheme)
 import App.Theme.SharedStyles as Styles 
 
-view : ColorMapping -> Theme -> Bool -> Model -> Html Msg
-view colors theme editMode model = 
+view : WrappedTheme -> Bool -> Model -> Html Msg
+view wrapped editMode model = 
   let
     title = 
       td
@@ -25,69 +25,69 @@ view colors theme editMode model =
 
     removeButton =
         td 
-          [ css [ removeButtonStyle colors theme ]
+          [ css [ removeButtonStyle wrapped ]
           , onClick RemoveCategory
           ]
           [ text "-" ]
     
     addButton = 
-        td [] [ viewAddButton colors theme model.addMode ]
+        td [] [ viewAddButton wrapped model.addMode ]
 
     content = 
       [ title
-      , viewLinks colors theme editMode model.links 
+      , viewLinks wrapped editMode model.links 
       ]
       |> Utils.appendIf editMode addButton 
       |> Utils.consIf editMode removeButton
   in
     tr
-      [ css [ categoryStyle colors model.color ]
+      [ css [ categoryStyle wrapped model.color ]
       ] 
       content
 
 
-viewLinks : ColorMapping -> Theme -> Bool -> List LinkModel.Model -> Html Msg
-viewLinks colors theme editMode links =
+viewLinks : WrappedTheme -> Bool -> List LinkModel.Model -> Html Msg
+viewLinks wrapped editMode links =
   td [] <|
-    List.map (LinkView.view colors theme editMode) links
+    List.map (LinkView.view wrapped editMode) links
 
-viewAddButton : ColorMapping -> Theme -> Bool -> Html Msg
-viewAddButton colors theme expanded = 
+viewAddButton : WrappedTheme -> Bool -> Html Msg
+viewAddButton wrapped expanded = 
   div
     [ css  
-      [ Styles.addButtonStyle colors theme Styles.addButtonWidthLarge expanded ]
+      [ Styles.addButtonStyle wrapped Styles.addButtonWidthLarge expanded ]
     ]
     [ span
       [ class "plus"
       , onClick AddMode
-      , css [ Styles.addButtonSpan colors theme expanded ]
+      , css [ Styles.addButtonSpan wrapped expanded ]
       ]
       [ text "+" ]
     , input
       [ placeholder "Name" 
       , onInput UpdateNameField 
       , onEnter Add
-      , css [ Styles.addButtonInput colors theme expanded ]
+      , css [ Styles.addButtonInput wrapped expanded ]
       ] []
     , input
       [ placeholder "Url"
       , onInput UpdateUrlField
       , onEnter Add
-      , css [ Styles.addButtonInput colors theme expanded ]
+      , css [ Styles.addButtonInput wrapped expanded ]
       ] []
     ]
 
 
 -- Styles
 
-categoryStyle : ColorMapping -> String -> Style 
-categoryStyle colors categoryColor = 
+categoryStyle : WrappedTheme -> String -> Style 
+categoryStyle wrapped categoryColor = 
   Css.batch 
     [ textAlign left 
     , fontSize (px 22)
     , padding (px 5)
     , Css.height (px 30)
-    , color <| colors categoryColor
+    , color <| wrapped.colors categoryColor
     ]
 
 titleStyle : Style 
@@ -105,14 +105,14 @@ titleStyle =
       ]
     ]
 
-removeButtonStyle : ColorMapping -> Theme -> Style 
-removeButtonStyle colors theme =
+removeButtonStyle : WrappedTheme -> Style 
+removeButtonStyle wrapped =
   Css.batch 
-    [ color <| colors theme.removeButton 
+    [ color <| wrapped.colors wrapped.theme.removeButton 
     , cursor pointer 
     , fontWeight bold 
     , textAlign center
     , Styles.circle 30
     , hover 
-      [ backgroundColor <| colors theme.addButton.hover.background ]
+      [ backgroundColor <| wrapped.colors wrapped.theme.addButton.hover.background ]
     ]

@@ -1,9 +1,15 @@
-module App.Theme.ColorScheme exposing (Theme, initTheme, ColorMap, ColorMapping, initColorMap, fromColorMap, mapSelector)
+module App.Theme.ColorScheme exposing (Theme, initTheme, ColorMap, ColorMapping, WrappedTheme, initColorMap, fromColorMap, mapSelector)
 
 import Dict exposing (Dict)
 import Css exposing (..)
 
 type alias ColorMap = Dict String String
+
+type alias WrappedTheme = 
+  { theme : Theme 
+  , colorMap : ColorMap
+  , colors : ColorMapping
+  }
 
 defaultColorMap =
   Dict.fromList 
@@ -15,14 +21,14 @@ defaultColorMap =
     , ("base05", "d3d0c8")
     , ("base06", "e8e6df")
     , ("base07", "f2f0ec")
-    , ("base08", "f2777a")
-    , ("base09", "f99157")
-    , ("base10", "ffcc66")
-    , ("base11", "99cc99")
-    , ("base12", "66cccc")
-    , ("base13", "6688cc")
-    , ("base14", "cc99cc")
-    , ("base15", "d27b53")
+    , ("accent00", "f2777a")
+    , ("accent01", "f99157")
+    , ("accent02", "ffcc66")
+    , ("accent03", "99cc99")
+    , ("accent04", "66cccc")
+    , ("accent05", "6688cc")
+    , ("accent06", "cc99cc")
+    , ("accent07", "d27b53")
     ]
 
 initColorMap : Maybe ColorMap -> ColorMap

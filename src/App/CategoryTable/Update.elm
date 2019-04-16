@@ -17,11 +17,22 @@ update msg model =
 
         AddMode -> 
             ( { model | addMode = not model.addMode }, Cmd.none )
+
+        EnterColorMode ->
+            ( { model | colorMode = True }, Cmd.none )
+        
+        UpdateColor newColor ->
+            ( { model 
+              | selectedColor = newColor 
+              , colorMode = False 
+              }
+            , Cmd.none 
+            )
         
         Add -> 
             ( model 
               |> setUid (model.uid + 1)
-              |> addCategory (newCategory model.inputField "base08" model.uid)
+              |> addCategory (newCategory model.inputField model.selectedColor model.uid)
             , Cmd.none
             )
         

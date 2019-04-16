@@ -9,19 +9,19 @@ import Time
 import App.Footer.Model exposing (Model)
 import App.Messages exposing (Msg(..))
 import App.Theme.SharedStyles as Styles
-import App.Theme.ColorScheme exposing (Theme, ColorMapping)
+import App.Theme.ColorScheme exposing (WrappedTheme)
 import Utils
 
-view : ColorMapping -> Theme -> Bool -> Model -> Html Msg
-view colors theme editMode model = 
+view : WrappedTheme -> Bool -> Model -> Html Msg
+view wrapped editMode model = 
   footer 
-    [ css [ footerStyle colors theme ]]
-    [ viewTime colors theme model.time model.zone
-    , viewEdit colors theme editMode 
+    [ css [ footerStyle wrapped ]]
+    [ viewTime wrapped model.time model.zone
+    , viewEdit wrapped editMode 
     ]
 
-viewTime : ColorMapping -> Theme -> Time.Posix -> Time.Zone -> Html Msg
-viewTime colors theme time zone =
+viewTime : WrappedTheme -> Time.Posix -> Time.Zone -> Html Msg
+viewTime wrapped time zone =
   let 
     hour = Time.toHour zone time 
     minute = Time.toMinute zone time 
@@ -36,12 +36,12 @@ viewTime colors theme time zone =
 
   in
     div 
-      [ css [ clockStyle colors theme ] ]
+      [ css [ clockStyle wrapped ] ]
       [ text (printedHour ++ ":" ++ printedMinute) ]
 
 
-viewEdit : ColorMapping -> Theme -> Bool -> Html Msg
-viewEdit colors theme editMode =
+viewEdit : WrappedTheme -> Bool -> Html Msg
+viewEdit wrapped editMode =
   let 
     iconBackground = 
       if editMode then "base04"
@@ -50,41 +50,42 @@ viewEdit colors theme editMode =
     div
       [ onClick ToggleEditMode
       , css 
-        [ trayIcon colors theme ]
+        [ trayIcon wrapped ]
       ] []
 
 -- Styles
 
-clockStyle : ColorMapping -> Theme -> Style 
-clockStyle colors theme =
+clockStyle : WrappedTheme -> Style 
+clockStyle wrapped =
   Css.batch 
     [ position absolute 
     , left (px 20)
     , fontSize (px 40)
-    , color <| colors theme.footer.clockColor
+    , color <| wrapped.colors wrapped.theme.footer.clockColor
     ]
 
-footerStyle : ColorMapping -> Theme -> Style 
-footerStyle colors theme =
+footerStyle : WrappedTheme -> Style 
+footerStyle wrapped =
   Css.batch 
     [ position fixed 
     , bottom (px 0)
     , left (px 0)
     , Css.width (pct 100)
     , Css.height (px 50)
-    , backgroundColor <| colors theme.footer.background
+    , backgroundColor <| wrapped.colors wrapped.theme.footer.background
     , textAlign right 
     ]
 
-trayIcon : ColorMapping -> Theme -> Style 
-trayIcon colors theme =
+trayIcon : WrappedTheme -> Style 
+trayIcon wrapped =
   Css.batch 
     [ Styles.circle 40 
     , position relative 
     , cursor pointer 
+    , top (px 5)
     , right (px 20)
     , display inlineBlock
-    , backgroundColor <| colors theme.footer.icons.background
+    , backgroundColor <| wrapped.colors wrapped.theme.footer.icons.background
     , hover 
-      [ backgroundColor <| colors theme.footer.icons.hover.background ]
+      [ backgroundColor <| wrapped.colors wrapped.theme.footer.icons.hover.background ]
     ]

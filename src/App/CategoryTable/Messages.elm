@@ -7,5 +7,7 @@ type Msg
     | UpdateField String
     | Add
     | AddMode
+    | EnterColorMode
+    | UpdateColor String
     | CategoryMsg Int CategoryMsg.Msg
 
