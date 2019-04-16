@@ -8802,8 +8802,6 @@ var author$project$Utils$appendIf = F3(
 			_List_fromArray(
 				[elm])) : list;
 	});
-var elm$core$Debug$log = _Debug_log;
-var elm$core$Debug$toString = _Debug_toString;
 var rtfeldman$elm_css$Html$Styled$div = rtfeldman$elm_css$Html$Styled$node('div');
 var author$project$App$CategoryTable$View$viewColorSelector = F2(
 	function (wrapped, model) {
@@ -8844,10 +8842,6 @@ var author$project$App$CategoryTable$View$viewColorSelector = F2(
 				[
 					author$project$App$CategoryTable$View$colorSelectorStyle(wrapped)
 				]));
-		var _n0 = A2(
-			elm$core$Debug$log,
-			'accent colors',
-			elm$core$Debug$toString(accentColors));
 		return A2(
 			rtfeldman$elm_css$Html$Styled$div,
 			_List_fromArray(
@@ -9949,6 +9943,7 @@ var author$project$App$View$greetingFont = rtfeldman$elm_css$Css$batch(
 			rtfeldman$elm_css$Css$fontSize(
 			rtfeldman$elm_css$Css$px(100))
 		]));
+var rtfeldman$elm_css$Css$marginBottom = rtfeldman$elm_css$Css$prop1('margin-bottom');
 var rtfeldman$elm_css$Html$Styled$h1 = rtfeldman$elm_css$Html$Styled$node('h1');
 var author$project$App$View$viewGreeting = F2(
 	function (wrapped, greeting) {
@@ -9961,7 +9956,9 @@ var author$project$App$View$viewGreeting = F2(
 						[
 							author$project$App$View$greetingFont,
 							rtfeldman$elm_css$Css$color(
-							wrapped.colors(wrapped.theme.title))
+							wrapped.colors(wrapped.theme.title)),
+							rtfeldman$elm_css$Css$marginBottom(
+							rtfeldman$elm_css$Css$px(25))
 						]))
 				]),
 			_List_fromArray(

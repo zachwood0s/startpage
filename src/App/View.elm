@@ -56,7 +56,9 @@ viewGreeting wrapped greeting =
     h1 
         [ css 
             [ greetingFont 
-            , color <| wrapped.colors wrapped.theme.title]
+            , color <| wrapped.colors wrapped.theme.title
+            , marginBottom (px 25)
+            ]
         ] 
         [ text greeting ]
 

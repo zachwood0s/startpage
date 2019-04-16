@@ -83,8 +83,6 @@ viewColorSelector wrapped model =
             |> List.head
             |> Maybe.withDefault "accent00"
 
-        _ = Debug.log "accent colors" (Debug.toString accentColors)
-
         selectorStyle = 
             [ colorSelectorStyle wrapped ]
             |> Utils.appendIf model.colorMode 
