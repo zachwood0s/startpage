@@ -7132,7 +7132,7 @@ var author$project$App$CategoryTable$View$colorSelectorStyle = function (wrapped
 var author$project$App$CategoryTable$View$colorItemSpacing = 4.0;
 var author$project$App$CategoryTable$View$colorSelectorStyleExpanded = function (itemCount) {
 	var totalItemWidth = itemCount * author$project$App$CategoryTable$View$colorItemDiameter;
-	var spacingWidth = (itemCount - 1) * author$project$App$CategoryTable$View$colorItemSpacing;
+	var spacingWidth = (itemCount + 4) * author$project$App$CategoryTable$View$colorItemSpacing;
 	var expandedWidth = spacingWidth + totalItemWidth;
 	return rtfeldman$elm_css$Css$batch(
 		_List_fromArray(
@@ -8802,6 +8802,8 @@ var author$project$Utils$appendIf = F3(
 			_List_fromArray(
 				[elm])) : list;
 	});
+var elm$core$Debug$log = _Debug_log;
+var elm$core$Debug$toString = _Debug_toString;
 var rtfeldman$elm_css$Html$Styled$div = rtfeldman$elm_css$Html$Styled$node('div');
 var author$project$App$CategoryTable$View$viewColorSelector = F2(
 	function (wrapped, model) {
@@ -8842,6 +8844,10 @@ var author$project$App$CategoryTable$View$viewColorSelector = F2(
 				[
 					author$project$App$CategoryTable$View$colorSelectorStyle(wrapped)
 				]));
+		var _n0 = A2(
+			elm$core$Debug$log,
+			'accent colors',
+			elm$core$Debug$toString(accentColors));
 		return A2(
 			rtfeldman$elm_css$Html$Styled$div,
 			_List_fromArray(

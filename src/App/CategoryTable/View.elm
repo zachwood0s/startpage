@@ -83,6 +83,8 @@ viewColorSelector wrapped model =
             |> List.head
             |> Maybe.withDefault "accent00"
 
+        _ = Debug.log "accent colors" (Debug.toString accentColors)
+
         selectorStyle = 
             [ colorSelectorStyle wrapped ]
             |> Utils.appendIf model.colorMode 
@@ -127,7 +129,7 @@ colorSelectorStyleExpanded : Int -> Style
 colorSelectorStyleExpanded itemCount =
     let 
         totalItemWidth = (toFloat itemCount) * colorItemDiameter
-        spacingWidth = (toFloat (itemCount - 1)) * colorItemSpacing
+        spacingWidth = (toFloat (itemCount + 4)) * colorItemSpacing
         expandedWidth = spacingWidth + totalItemWidth
     in
         Css.batch 
